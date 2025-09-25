@@ -1,0 +1,58 @@
+For Daily use ETL to Table
+
+#------------------------------#
+# TO DO:
+# - Build a script to take in any csv files for GTC orders
+# - Process the data into a pandas dataframe
+# - Clean the data 
+#    - Including dropping unneeded columns
+#
+# - Two options:
+#       1. Store the data in a sqlite database
+#           - Store the data in a temp sqlite table (table is dropped at start of process)
+#           - Pull the data for daily use table
+#           - export the retrieved data in a format that is easy to read
+#           - Send the export file to email address
+#       2. Transform pandas dataframe into a daily use table
+#           - export the data in a format that is easy to read
+#           - Send the export file to email address
+#
+# - Add logging to the process
+# - Add error handling to the process
+# - Automaticaly delete the csv files at the end of the process
+#
+# - Two options for automatization:
+# -     1. Automat the process to run when new csv files are saved to input folder
+# -     2. Automat the process to run when csv files are sent to email address
+# - 
+#------------------------------#
+# OUTPUT: square data
+# - Table to include:
+#   - Item Name
+#   - Item Modifiers
+#   - Item Variation
+#   - Order Name
+#   - Item Price
+#   - Item Quantity
+# - Table should be Orderd by Item Name
+# - File format: (these are options to be looked into)
+#   - Excel
+#   - CSV
+#   - PDF
+#   - txt
+#------------------------------#
+# OUTPUT: shopify data
+# - Table to include:
+#   - Lineitem name
+#   - Shipping Name
+#   - Lineitem price
+#   - Lineitem quantity
+# - Table should be Orderd by Item Name
+# - File format: (these are options to be looked into)
+#   - Excel
+#   - CSV
+#   - PDF
+#   - txt
+#------------------------------#
+
+For ETL 
