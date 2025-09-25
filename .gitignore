@@ -1,0 +1,7 @@
+# Ignore environment variable files and logs
+.env
+*.db
+logs/
+*.log
+data/
+scripts output/
