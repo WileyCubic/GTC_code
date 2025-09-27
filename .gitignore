@@ -5,3 +5,7 @@ logs/
 *.log
 data/
 scripts output/
+TO_DO.txt
+
+.venv/
+__pycache__/

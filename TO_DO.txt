@@ -19,14 +19,15 @@ For Daily use ETL to Table
 #
 # - Add logging to the process
 # - Add error handling to the process
-# - Automaticaly delete the csv files at the end of the process
+# - Automaticaly delete the csv files at the end of the process (handeled in anohter script)
 #
-# - Two options for automatization:
+# - Options for automatization:
 # -     1. Automat the process to run when new csv files are saved to input folder
 # -     2. Automat the process to run when csv files are sent to email address
+# -     3. Look into a website that allow for uploading a CSV file and return formated xlsx file to download
 # - 
-#------------------------------#
-# OUTPUT: square data
+#------------------------------# (Finished and working)
+# OUTPUT by item name: square data
 # - Table to include:
 #   - Item Name
 #   - Item Modifiers
@@ -35,24 +36,71 @@ For Daily use ETL to Table
 #   - Item Price
 #   - Item Quantity
 # - Table should be Orderd by Item Name
-# - File format: (these are options to be looked into)
+# - File format: 
 #   - Excel
-#   - CSV
-#   - PDF
-#   - txt
-#------------------------------#
-# OUTPUT: shopify data
+#------------------------------# (Finished and working)
+# OUTPUT by Lineitem name: shopify data
 # - Table to include:
 #   - Lineitem name
 #   - Shipping Name
 #   - Lineitem price
 #   - Lineitem quantity
 # - Table should be Orderd by Item Name
-# - File format: (these are options to be looked into)
+# - File format: 
 #   - Excel
-#   - CSV
-#   - PDF
-#   - txt
+#------------------------------#
+# OUTPUT by customer name: square data (use everything from output by item name just change the formating)
+# - Table to include:
+#   - Order Name
+#   - Item Name
+#   - Item Modifiers
+#   - Item Variation
+#   - Item Price
+#   - Item Quantity
+# - Table should be Orderd by Item Name
+# - File format: 
+#   - Excel
+#------------------------------#
+# OUTPUT by item name: shopify data (use everything from output by lineitem name just change formating)
+# - Table to include:
+#   - Shipping Name
+#   - Lineitem name
+#   - Lineitem price
+#   - Lineitem quantity
+# - Table should be Orderd by Item Name
+# - File format: 
+#   - Excel
+#------------------------------#
+# --- chart to show what garments are need to be bought form venders --- #
+#------------------------------#
+# OUTPUT by quantities of item: square ()
+# - Table to include:
+#   - Garment Name (not directly in data, will need to be taken from the item name)
+#   - garment color (not directly in data, will need to be taken form the _______)
+#   - garment size (not directly in data, will need to be taken form the ________)
+# - Table shouold be ordered by garment name,
+# - subtotals for color and size
+# - File format:
+#   - Excel
+#------------------------------#
+# OUTPUT by quantities of item: shopify ()
+# - Table to include:
+#   - Garment Name (not directly in data, will need to be taken from the lineitem name)
+#   - garment color (not directly in data, will need to be taken form the _______) (still need to be found, might not even be in data at all)
+#   - garment size (not directly in data, will need to be taken form the ________) (still need to be found, might not even be in data at all)
+# - Table shouold be ordered by garment name,
+# - subtotals for color and size
+# - File format:
+#   - Excel
+# DO NOT include:
+# - any information that what was stated above
 #------------------------------#
 
-For ETL 
+----- one that is the same as the current output but uses customer name as the first column, all other shift right one
+
+----- quantities of item(nazy shorts, ) by color by size 
+for the names use the identifyers that are given in the item names
+
+subtotals for color and size marked out by each item name
+
+for this only need a count (do not add who they are going to)
