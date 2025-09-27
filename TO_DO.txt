@@ -49,6 +49,8 @@ For Daily use ETL to Table
 # - File format: 
 #   - Excel
 #------------------------------#
+----- one that is the same as the current output but uses customer name as the first column, all other shift right one
+
 # OUTPUT by customer name: square data (use everything from output by item name just change the formating)
 # - Table to include:
 #   - Order Name
@@ -75,32 +77,28 @@ For Daily use ETL to Table
 #------------------------------#
 # OUTPUT by quantities of item: square ()
 # - Table to include:
-#   - Garment Name (not directly in data, will need to be taken from the item name)
+#   - Garment Name (not directly in data, use the identifyers that are given in the item names)
 #   - garment color (not directly in data, will need to be taken form the _______)
 #   - garment size (not directly in data, will need to be taken form the ________)
 # - Table shouold be ordered by garment name,
 # - subtotals for color and size
+# - for this only need a count
 # - File format:
 #   - Excel
+# DO NOT include:
+# - any information that what was stated above
 #------------------------------#
 # OUTPUT by quantities of item: shopify ()
 # - Table to include:
-#   - Garment Name (not directly in data, will need to be taken from the lineitem name)
+#   - Garment Name (not directly in data, use the identifyers that are given in the lineitem name)
 #   - garment color (not directly in data, will need to be taken form the _______) (still need to be found, might not even be in data at all)
-#   - garment size (not directly in data, will need to be taken form the ________) (still need to be found, might not even be in data at all)
+#   - garment size (not directly in data, will need to be taken form the ________) (still need to be found, might not even be in data at all) (garments have different sizes)
 # - Table shouold be ordered by garment name,
 # - subtotals for color and size
+# - for this only need a count
 # - File format:
 #   - Excel
 # DO NOT include:
 # - any information that what was stated above
 #------------------------------#
 
------ one that is the same as the current output but uses customer name as the first column, all other shift right one
-
------ quantities of item(nazy shorts, ) by color by size 
-for the names use the identifyers that are given in the item names
-
-subtotals for color and size marked out by each item name
-
-for this only need a count (do not add who they are going to)
