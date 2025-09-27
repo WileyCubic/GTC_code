@@ -95,12 +95,3 @@ For Daily use ETL to Table
 # DO NOT include:
 # - any information that what was stated above
 #------------------------------#
-
------ one that is the same as the current output but uses customer name as the first column, all other shift right one
-
------ quantities of item(nazy shorts, ) by color by size 
-for the names use the identifyers that are given in the item names
-
-subtotals for color and size marked out by each item name
-
-for this only need a count (do not add who they are going to)
