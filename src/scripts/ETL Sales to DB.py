@@ -6,7 +6,6 @@ import mysql.connector as mysql
 from sqlalchemy import create_engine
 import glob 
 import os
-import re
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -14,11 +13,11 @@ load_dotenv()
 # DO NOT PULL ORDER LOGS PRIOR TO 08/01/2024
 
 # set pandas display for building and testing purposes
-pd.set_option('display.max_rows', None)  # Show all rows
-pd.set_option('display.max_columns', None)  # Optional: Show all columns
-pd.set_option('display.width', None)  # Optional: Prevent line wrapping
-pd.set_option('display.max_colwidth', None)  # Optional: Show full column content]
-pd.set_option('display.float_format', '{:.6f}'.format)  # Optional: Format floats to 2 decimal places
+pd.set_option('display.max_rows', None)
+pd.set_option('display.max_columns', None)
+pd.set_option('display.width', None)
+pd.set_option('display.max_colwidth', None)
+pd.set_option('display.float_format', '{:.6f}'.format)
 
 #------------------------------#
 # log processing
@@ -33,34 +32,9 @@ def log(message):
     print(f'Log entry added: {message}, {timestamp}')
 
 # log file path
-log_file = os.getenv('ETL_CSV_to_DB_log_file')
+log_file = os.getenv('ETL_Sales_to_DB_log_file')
 
 log('ETL CSV to DB process started')
-
-#------------------------------#
-# Extracting data from csv files
-#------------------------------#
-
-# input file paths
-try:
-    order_drump_square = os.getenv('ELT_CSV_to_DB_square_CSV_input')
-    square_csv_files = glob.glob(order_drump_square + '/*.csv')
-    square_csv_files
-    log(f'Square CSV files found: {square_csv_files}')
-    print(f'Square CSV files found: {square_csv_files}')
-except Exception as e:
-    print(f"Error finding Square CSV files: {e}")
-    log(f"Error finding Square CSV files: {e}")
-
-try:
-    order_dump_shopify = os.getenv('ETL_CSV_to_DB_shopify_CSV_input')
-    shopify_csv_files = glob.glob(order_dump_shopify + '/*.csv')
-    shopify_csv_files
-    log(f'Shopify CSV files found: {shopify_csv_files}')
-    print(f'Shopify CSV files found: {shopify_csv_files}')
-except Exception as e:
-    print(f"Error finding Shopify CSV files: {e}")
-    log(f"Error finding Shopify CSV files: {e}")
 
 #------------------------------#
 # SQL Database Connections
@@ -71,7 +45,6 @@ try:
     SQLite_connection = sqlite3.connect(os.getenv('SQLite_database'))
     log("Successfully connected to SQLite database")
 except Exception as e:
-    print(f"Error connecting to SQLite database: {e}")
     log(f"Error connecting to SQLite database: {e}")
 
 # MySQL Database Connection
@@ -82,7 +55,6 @@ try:
     database= os.getenv('Mysql_database')
     log("MySQL environment variables loaded successfully")
 except Exception as e:
-    print(f"Error loading MySQL environment variables: {e}")
     log(f"Error loading MySQL environment variables: {e}")
 
 try:
@@ -93,10 +65,8 @@ try:
         database=database
     )
     if Mysql_connection.is_connected():
-        print("Successfully connected to MySQL database")
         log("Successfully connected to MySQL database")
 except mysql.Error as e:
-    print(f"Error connecting to MySQL Platform: {e}")
     log(f"Error connecting to MySQL Platform: {e}")
 
 #create sqlalchemy engine for mysql
@@ -108,13 +78,6 @@ log("MySQL SQLAlchemy engine created successfully")
 #MySQL database cursor
 Mysql_cursor = Mysql_connection.cursor()
 log("MySQL cursor created")
-
-# Function to execute MySQL queries
-def sql_query(query, connection):
-    df = pd.read_sql(query, connection)
-    print(f'Executed: {query}')
-    log(f'Executed: {query}')
-    return df
 
 #SQLite database cursor
 SQLite_cursor = SQLite_connection.cursor()
@@ -140,124 +103,27 @@ log("Dropped MySQL tables orders if it existed")
 # Data Extraction and Transformation
 #------------------------------#
 
-# Input CSV attributes
+#------------------------------#
+# Extracting data from csv files
+#------------------------------#
 
-square_attribute_list = [
-    'Order',
-    'Order Name',
-    'Order Date',
-    'Currency',
-    'Order Subtotal', 
-    'Order Shipping Price',
-    'Order Tax Total',
-    'Order Total',
-    'Order Refunded Amount',
-    'Fulfillment Date',
-    'Fulfillment Type',
-    'Fulfillment Status',
-    'Channels',
-    'Fulfillment Location',
-    'Fulfillment Notes',
-    'Recipient Name',
-    'Recipient Email',
-    'Recipient Phone',
-    'Recipient Address',
-    'Recipient Address 2',
-    'Recipient Postal Code',
-    'Recipient City',
-    'Recipient Region',
-    'Recipient Country',
-    'Item Quantity',
-    'Item Name',
-    'Item SKU',
-    'Item Variation',
-    'Item Modifiers',
-    'Item Price',
-    'Item Options Total Price',
-    'Item Total Price'
-]
+# input file paths
+try:
+    order_drump_square = os.getenv('ELT_Sales_to_DB_square_CSV_input')
+    square_csv_files = glob.glob(order_drump_square + '/*.csv')
+    square_csv_files
+    log(f'Square CSV files found: {len(square_csv_files)}')
+except Exception as e:
+    log(f"Error finding Square CSV files: {e}")
 
-shopify_attribute_list = [
-    'Name',
-    'Email',
-    'Financial Status',
-    'Paid at',
-    'Fulfillment Status',
-    'Fulfilled at',
-    'Accepts Marketing',
-    'Currency',
-    'Subtotal',
-    'Shipping',
-    'Taxes',
-    'Total',
-    'Discount Code',
-    'Discount Amount',
-    'Shipping Method',
-    'Created at',
-    'Lineitem quantity',
-    'Lineitem name',
-    'Lineitem price',
-    'Lineitem compare at price',
-    'Lineitem sku',
-    'Lineitem requires shipping',
-    'Lineitem taxable',
-    'Lineitem fulfillment status',
-    'Billing Name',
-    'Billing Street',
-    'Billing Address1',
-    'Billing Address2',
-    'Billing Company',
-    'Billing City',
-    'Billing Zip',
-    'Billing Province',
-    'Billing Country',
-    'Billing Phone',
-    'Shipping Name',
-    'Shipping Street',
-    'Shipping Address1',
-    'Shipping Address2',
-    'Shipping Company',
-    'Shipping City',
-    'Shipping Zip',
-    'Shipping Province',
-    'Shipping Country',
-    'Shipping Phone',
-    'Notes',
-    'Note Attributes',
-    'Cancelled at',
-    'Payment Method',
-    'Payment Reference',
-    'Refunded Amount',
-    'Vendor',
-    'Outstanding Balance',
-    'Employee',
-    'Location',
-    'Device ID',
-    'Id',
-    'Tags',
-    'Risk Level',
-    'Source',
-    'Lineitem discount',
-    'Tax 1 Name',
-    'Tax 1 Value',
-    'Tax 2 Name',
-    'Tax 2 Value',
-    'Tax 3 Name',
-    'Tax 3 Value',
-    'Tax 4 Name',
-    'Tax 4 Value',
-    'Tax 5 Name',
-    'Tax 5 Value',
-    'Phone',
-    'Receipt Number',
-    'Duties',
-    'Billing Province Name',
-    'Shipping Province Name',
-    'Payment ID',
-    'Payment Terms Name',
-    'Next Payment Due At',
-    'Payment References'
-]
+try:
+    order_dump_shopify = os.getenv('ETL_Sales_to_DB_shopify_CSV_input')
+    shopify_csv_files = glob.glob(order_dump_shopify + '/*.csv')
+    shopify_csv_files
+    log(f'Shopify CSV files found: {len(shopify_csv_files)}')
+except Exception as e:
+    log(f"Error finding Shopify CSV files: {e}")
+
 
 # Define a function to transform Recipient Phone Numbers to x (xxx) xxx-xxxx format
 def format_phone_number(phone):
@@ -276,18 +142,21 @@ def format_phone_number(phone):
         else:
             return ValueError
     except Exception as e:
-        print(f'Error formatting phone number {phone}: {e}')
         log(f'Error formatting phone number {phone}: {e}')
         return phone
 
 #------------------------------#
-# Functions realating to square data extraction and transformation
+# covert csv files to dataframes
 #------------------------------#
 
 # Function to read CSV and convert to DataFrame 
-def square_input_csv_to_df(file_path):
+def input_csv_to_df(file_path):
         df = pd.concat((pd.read_csv(f) for f in file_path), ignore_index=True)
         return df
+
+#------------------------------#
+# Transformaing dataframes
+#------------------------------#
 
 def transform_square(df):
     # fill na values
@@ -296,10 +165,8 @@ def transform_square(df):
     
     try:                # convert is working
         df['Order Date'] = pd.to_datetime(df['Order Date'], errors='raise')
-        print('no errors found in order_date conversion')
         log('no errors found in order_date conversion')
     except Exception as e:
-        print(f'Error converting order_date: {e}')
         log(f'Error converting order_date: {e}')
         
     df['Order Subtotal'] = df['Order Subtotal'].astype(float).round(2)
@@ -314,11 +181,9 @@ def transform_square(df):
     
     try:                # convert is working
         df['Fulfillment Date'] = pd.to_datetime(df['Fulfillment Date'], errors='raise')
-        print('no errors found in fulfillment_date conversion')
         log('no errors found in fulfillment_date conversion')
     except Exception as e:
-        print(f'Error converting fulfillment_date: {e}')
-        log(f'Error converting fulfillment_date: {e}')
+        log(f'ERROR: converting fulfillment_date: {e}')
         
     df['Recipient Phone'] = df['Recipient Phone'].apply(format_phone_number).fillna(0)
     
@@ -335,15 +200,6 @@ def transform_square(df):
     log('Square data transformation complete')
 
     return df
-
-#------------------------------#
-# Functions realating to Shopify data extraction and transformation
-#------------------------------#
-
-# Function to read CSV and convert to DataFrame 
-def shopify_input_csv_to_df(file_path):
-        df = pd.concat((pd.read_csv(f) for f in file_path), ignore_index=True)
-        return df
 
 def transform_shopify(df):
     try: 
@@ -362,6 +218,8 @@ def transform_shopify(df):
         df['Paid at'] = pd.to_datetime(df['Paid at'], errors='coerce')
     
         df['Fulfilled at'] = pd.to_datetime(df['Fulfilled at'], errors='coerce')
+        
+        df['Created at'] = pd.to_datetime(df['Created at'], errors='raise')
         
         df['Billing Phone'] = df['Billing Phone'].apply(format_phone_number).fillna(0)
         
@@ -400,13 +258,10 @@ def transform_shopify(df):
         df['Tax 3 Value'] = df['Tax 3 Value'].astype(float).round(2)
         df['Tax 4 Value'] = df['Tax 4 Value'].astype(float).round(2)
         df['Tax 5 Value'] = df['Tax 5 Value'].astype(float).round(2)
-        
-        df['Created at'] = pd.to_datetime(df['Created at'], errors='raise')
     
         df.drop(df[df['Cancelled at'].notna()].index, inplace=True)
         
     except Exception as e:
-        print(f'Error converting: {e}')
         log(f'Error converting: {e}')
     
     
@@ -425,56 +280,60 @@ def transform_shopify(df):
 # Load to SQLite db works for both square and shopify dataframes
 def df_to_sqlite(df, table_name):
     df.to_sql(table_name, SQLite_connection, if_exists='replace', index=False)
-    print(f'Table {table_name} created in SQLite database.')
     log(f'Table {table_name} created in SQLite database.')
 
-
-
-# sql query to create square orders table
-def create_square_orders_table(df):
-    df.to_sql('square_orders', mysql_engine, if_exists='replace', index=False)
-    print('Table square_orders created in MySQL database.')
-    log('Table square_orders created in MySQL database.')
-
-# sql query to create shopify orders table
-def create_shopify_orders_table(df):
-    df.to_sql('shopify_orders', mysql_engine, if_exists='replace', index=False)
-    print('Table shopify_orders created in MySQL database.')
-    log('Table shopify_orders created in MySQL database.')
+# sql query to create orders table
+def create_mysql_table(df, table_name):
+    df.to_sql(table_name, mysql_engine, if_exists='replace', index=False)
+    log(f'Table {table_name} created in MySQL database.')
 
 #------------------------------#
-# All functions are working
-#------------------------------#   
-
-
-#------------------------------#
-# Main Process
+# ETL Process
 #------------------------------# 
 
 #shopify
 
-shopify_input_df = shopify_input_csv_to_df(shopify_csv_files)
-log('Shopify CSV files converted to dataframe')
-
-transformed_shopify_df = transform_shopify(shopify_input_df)
-log('Shopify dataframe cleaned for loading')
-
-df_to_sqlite(transformed_shopify_df, 'shopify_orders')
-log('Shopify dataframe loaded to SQLite database')
-
-create_shopify_orders_table(transformed_shopify_df)
-log('Shopify dataframe loaded to MySQL database')
-
+try:
+    shopify_df = input_csv_to_df(shopify_csv_files)
+    log('Shopify CSV files loaded to df')
+    shopify_df = transform_shopify(shopify_df)
+    log('Shopify df transformed')
+    df_to_sqlite(shopify_df, 'shopify_orders')
+    log('Shopify df loaded to SQLite')
+    create_mysql_table(shopify_df, 'shopify_orders')
+    log('Shopify df loaded to MySQL')
+except Exception as e:
+    log(f"ERROR: in Shopify ELT process: {e}")  
+    
 #square
 
-square_input_df = square_input_csv_to_df(square_csv_files)
-log('Square CSV files converted to dataframe')
+try:
+    square_df = input_csv_to_df(square_csv_files)
+    log('Square CSV files loaded to df')
+    square_df = transform_square(square_df)
+    log('Square df transformed')
+    df_to_sqlite(square_df, 'square_orders')
+    log('Square df loaded to SQLite')
+    create_mysql_table(square_df, 'square_orders')
+    log('Square df loaded to MySQL')
+except Exception as e:
+    log(f"ERROR: in Square ELT process: {e}")
+    
+#------------------------------#
+# Close database connections
+#------------------------------#
+def close_connections():
+    try:
+        SQLite_connection.close()
+        log("SQLite connection closed")
+    except Exception as e:
+        log(f"ERROR: closing SQLite connection: {e}")
+    try:
+        Mysql_cursor.close()
+        Mysql_connection.close()
+        log("MySQL connection closed")
+    except Exception as e:
+        log(f"ERROR: closing MySQL connection: {e}")
 
-transformed_square_df = transform_square(square_input_df)
-log('Square dataframe cleaned for loading')
-
-df_to_sqlite(transformed_square_df, 'square_orders')
-log('Square dataframe loaded to SQLite database')
-
-create_square_orders_table(transformed_square_df)
-log('Square dataframe loaded to MySQL database')
+close_connections()
+log('ETL Expences to DB process completed')
