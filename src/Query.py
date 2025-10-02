@@ -9,7 +9,7 @@ load_dotenv()
 from datetime import datetime
 
 
-log_file = os.getenv('test_log_file')
+log_file = os.getenv('Query_log_file')
 #writing both to daily log and global log
 def log(message):
     now = datetime.now()
@@ -47,19 +47,38 @@ except mysql.Error as e:
 Mysql_cursor = Mysql_connection.cursor()
 log("MySQL cursor created")
 
+# MySQL SQLAlchemy engine
+mysql_engine = create_engine(f'mysql+mysqlconnector://{user}:{password}@{host}/{database}')
+log("MySQL SQLAlchemy engine created successfully")
+
 # Function to execute MySQL queries
 def sql_query(query, connection):
     df = pd.read_sql(query, connection)
-    print(f'Executed: {query}')
     log(f'Executed: {query}')
     return df
 
-query = "SELECT * FROM ab_expences"
-ab_df = sql_query(query, Mysql_connection)
-print(ab_df.info())
+# Query need to get data
+query = '''
+select `Fulfilled at`, `Name`, `Lineitem name`, `Billing Name`, `Shipping Country`, `Shipping Zip`, `Lineitem quantity`, `Lineitem price`
+from shopify_orders
+where `Fulfilled at` is not null;
+'''
+
+def export_to_csv(df):
+    #                                  Output Path                  Name of output file
+    putput_name = os.path.join(os.getenv('Royalties_report_output'), 'shopify_data.csv')
+    try:
+        df.to_csv(putput_name, index=False)
+        log(f"Data exported to CSV")
+    except Exception as e:
+        log(f"ERROR: exporting data to CSV: {e}")
+
+# run query and export csv
+
+export_to_csv(sql_query(query, mysql_engine))
 
 
-
+# Close MySQL connection
 
 try:
     Mysql_cursor.close()
@@ -67,3 +86,5 @@ try:
     log("MySQL connection closed")
 except Exception as e:
     log(f"ERROR: closing MySQL connection: {e}")
+    
+    
