@@ -58,11 +58,20 @@ def sql_query(query, connection):
     return df
 
 # Query need to get data
-query = '''
-select `Fulfilled at`, `Name`, `Lineitem name`, `Billing Name`, `Shipping Country`, `Shipping Zip`, `Lineitem quantity`, `Lineitem price`
+shopify_query = '''
+select `Paid at`, `Name`, `Lineitem name`, `Billing Name`, `Shipping Country`, `Shipping Zip`, `Lineitem quantity`, `Lineitem price`
 from shopify_orders
-where `Fulfilled at` is not null;
+where `Paid at` is not null;
 '''
+
+squre_query = '''
+select `Order Date`, `Order` , `Item Name`, `Order Name`, `Recipient Country`, `Recipient Postal Code`, `Item Quantity`,  `Item Price`
+from square_orders
+where `Order Date` >= '2025-06-01' 
+and `Order Date` <=  '2025-09-30'
+and `Item Name` like '%ncl%';
+'''
+
 
 def export_to_csv(df):
     #                                  Output Path                  Name of output file
@@ -75,7 +84,7 @@ def export_to_csv(df):
 
 # run query and export csv
 
-export_to_csv(sql_query(query, mysql_engine))
+export_to_csv(sql_query(shopify_query, mysql_engine))
 
 
 # Close MySQL connection

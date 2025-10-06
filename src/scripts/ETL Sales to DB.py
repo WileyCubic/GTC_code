@@ -259,7 +259,7 @@ def transform_shopify(df):
         df['Tax 4 Value'] = df['Tax 4 Value'].astype(float).round(2)
         df['Tax 5 Value'] = df['Tax 5 Value'].astype(float).round(2)
     
-        df.drop(df[df['Cancelled at'].notna()].index, inplace=True)
+        df.drop(df[df['Cancelled at'].notna()], inplace=True)
         
     except Exception as e:
         log(f'Error converting: {e}')
@@ -337,3 +337,13 @@ def close_connections():
 
 close_connections()
 log('ETL Expences to DB process completed')
+
+
+#------------------------------#
+# Testing
+#------------------------------#
+
+shopify_df = input_csv_to_df(shopify_csv_files)
+shopify_transformed_df = transform_shopify(shopify_df)
+shopify_transformed_df.info()
+shopify_transformed_df.head(10)
