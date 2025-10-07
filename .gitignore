@@ -9,3 +9,6 @@ TO_DO.txt
 
 .venv/
 __pycache__/
+.vscode/
+SQL/
+
