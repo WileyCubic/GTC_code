@@ -135,7 +135,58 @@ def csv_to_df(files):
 
 def transform_bp(df):
     try:
+        
+        # remove rows not needed
+        remove_card_members = [os.getenv('Card_Member_1'), os.getenv('Card_Member_4')]
+        remove_descriptions = [os.getenv('PMT_Line_1'), os.getenv('PMT_Line_2')]
+
+        mask = ~df['Card Member'].isin(remove_card_members) & ~df['Description'].isin(remove_descriptions)
+        df = df.loc[mask].copy()
+        
         # Fill nan values
+        
+        df.fillna({
+            'Address': 'Not Provided',
+            'City/State': 'Not Provided',
+            'Zip Code': 'Not Provided',
+            'Country': 'Not Provided',
+            'Reference': 'Not Provided',
+            'Category': 'Not Provided',    
+        })
+        
+        # formate date to datetime
+        df['Date'] = pd.to_datetime(df['Date'], errors='coerce').dt.date
+        
+        # round to 2 decimal places
+        df['Amount'] = df['Amount'].astype(float).round(2)
+        
+        # clean up value formatting
+        df.replace({
+            'Extended Details': {'\n': ', '},
+            'City/State': {'\n': ', '}
+        }, regex=True)
+        
+        df['Account #'] = df['Account #'].replace('-', '', regex=False)
+        
+        df.sort_values(by='Date', inplace=True)
+        df.reset_index(drop=True, inplace=True)
+        
+        return df
+    
+    except Exception as e:
+        log(f"ERROR: transforming table: {e}")
+        
+        
+def transform_ab(df):
+    try:
+        
+        # remove rows not needed
+        remove_descriptions = [os.getenv('PMT_Line_1'), os.getenv('PMT_Line_2')]
+        mask = ~df['Description'].isin(remove_descriptions)
+        df = df.loc[mask].copy()
+        
+        # Fill nan values
+        
         df.fillna({
             'Address': 'Not Provided',
             'City/State': 'Not Provided',
@@ -200,7 +251,7 @@ except Exception as e:
 try:
     ab_df = csv_to_df(ab_csv_files)
     log("ab CSV files loaded to df")
-    ab_df = transform_bp(ab_df)
+    ab_df = transform_ab(ab_df)
     log("ab df transformed")
     df_to_sqlite(ab_df, 'ab_expences')
     log("ab df loaded to SQLite")
