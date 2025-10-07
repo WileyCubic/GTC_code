@@ -45,7 +45,7 @@ try:
     SQLite_connection = sqlite3.connect(os.getenv('SQLite_database'))
     log("Successfully connected to SQLite database")
 except Exception as e:
-    log(f"Error connecting to SQLite database: {e}")
+    log(f"ERROR connecting to SQLite database: {e}")
 
 # MySQL Database Connection
 try:
@@ -55,7 +55,7 @@ try:
     database= os.getenv('Mysql_database')
     log("MySQL environment variables loaded successfully")
 except Exception as e:
-    log(f"Error loading MySQL environment variables: {e}")
+    log(f"ERROR loading MySQL environment variables: {e}")
 
 try:
     Mysql_connection = mysql.connect(
@@ -67,7 +67,7 @@ try:
     if Mysql_connection.is_connected():
         log("Successfully connected to MySQL database")
 except mysql.Error as e:
-    log(f"Error connecting to MySQL Platform: {e}")
+    log(f"ERROR connecting to MySQL Platform: {e}")
 
 #create sqlalchemy engine for mysql
 mysql_engine = create_engine(f'mysql+mysqlconnector://{user}:{password}@{host}/{database}')
@@ -114,7 +114,7 @@ try:
     square_csv_files
     log(f'Square CSV files found: {len(square_csv_files)}')
 except Exception as e:
-    log(f"Error finding Square CSV files: {e}")
+    log(f"ERROR finding Square CSV files: {e}")
 
 try:
     order_dump_shopify = os.getenv('ETL_Sales_to_DB_shopify_CSV_input')
@@ -122,7 +122,7 @@ try:
     shopify_csv_files
     log(f'Shopify CSV files found: {len(shopify_csv_files)}')
 except Exception as e:
-    log(f"Error finding Shopify CSV files: {e}")
+    log(f"ERROR finding Shopify CSV files: {e}")
 
 
 # Define a function to transform Recipient Phone Numbers to x (xxx) xxx-xxxx format
@@ -142,7 +142,7 @@ def format_phone_number(phone):
         else:
             return ValueError
     except Exception as e:
-        log(f'Error formatting phone number {phone}: {e}')
+        log(f'ERROR formatting phone number {phone}: {e}')
         return phone
 
 #------------------------------#
@@ -167,7 +167,7 @@ def transform_square(df):
         df['Order Date'] = pd.to_datetime(df['Order Date'], errors='raise')
         log('no errors found in order_date conversion')
     except Exception as e:
-        log(f'Error converting order_date: {e}')
+        log(f'ERROR converting order_date: {e}')
         
     df['Order Subtotal'] = df['Order Subtotal'].astype(float).round(2)
     
@@ -203,6 +203,14 @@ def transform_square(df):
 
 def transform_shopify(df):
     try: 
+        # dropping cancelled orders and false orders
+        df_mask = df['Paid at'].notna() & df['Cancelled at'].isna()
+        df = df.loc[df_mask].copy()
+        
+        # remove unneeded apostrophes 
+        
+        df['Shipping Zip'] = df['Shipping Zip'].str.replace("'", "", regex=False)
+        df['Billing Zip'] = df['Billing Zip'].str.replace("'", "", regex=False)
         
         # fill na values
         df.fillna({
@@ -257,12 +265,10 @@ def transform_shopify(df):
         df['Tax 2 Value'] = df['Tax 2 Value'].astype(float).round(2)
         df['Tax 3 Value'] = df['Tax 3 Value'].astype(float).round(2)
         df['Tax 4 Value'] = df['Tax 4 Value'].astype(float).round(2)
-        df['Tax 5 Value'] = df['Tax 5 Value'].astype(float).round(2)
-    
-        df.drop(df[df['Cancelled at'].notna()], inplace=True)
+        df['Tax 5 Value'] = df['Tax 5 Value'].astype(float).round(2)     
         
     except Exception as e:
-        log(f'Error converting: {e}')
+        log(f'ERROR converting: {e}')
     
     
     # Sort by Order Date and reset index
@@ -338,12 +344,3 @@ def close_connections():
 close_connections()
 log('ETL Expences to DB process completed')
 
-
-#------------------------------#
-# Testing
-#------------------------------#
-
-shopify_df = input_csv_to_df(shopify_csv_files)
-shopify_transformed_df = transform_shopify(shopify_df)
-shopify_transformed_df.info()
-shopify_transformed_df.head(10)

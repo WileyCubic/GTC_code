@@ -59,16 +59,31 @@ def sql_query(query, connection):
 
 # Query need to get data
 shopify_query = '''
-select `Paid at`, `Name`, `Lineitem name`, `Billing Name`, `Shipping Country`, `Shipping Zip`, `Lineitem quantity`, `Lineitem price`
+select `Paid at` as `Date`,
+ `Name` as `Invoice ID`,
+ `Lineitem name` as ` Item Description`,
+ `Billing Name` as` Customer`,
+ `Shipping Country` as `Shipping Country`,
+ `Shipping Zip` as `Shipping Postal Code`,
+ `Lineitem quantity` as `Number of Units`,
+ `Lineitem price` as `Price Per Unit`
 from shopify_orders
-where `Paid at` is not null;
+where `Paid at` >= '2025-07-01' 
+and `Paid at` <=  '2025-09-30 23:59:59';
 '''
 
 squre_query = '''
-select `Order Date`, `Order` , `Item Name`, `Order Name`, `Recipient Country`, `Recipient Postal Code`, `Item Quantity`,  `Item Price`
+select `Order Date` as `Date`,
+ `Order` as `Invoice ID`,
+ `Item Name` as ` Item Description`,
+ `Order Name` as` Customer`, 
+ `Recipient Country` as `Shipping Country`,
+ `Recipient Postal Code` as `Shipping Postal Code`, 
+ `Item Quantity` as `Number of Units`,
+ `Item Price` as `Price Per Unit`
 from square_orders
-where `Order Date` >= '2025-06-01' 
-and `Order Date` <=  '2025-09-30'
+where `Order Date` >= '2025-07-01' 
+and `Order Date` <=  '2025-09-30 23:59:59'
 and `Item Name` like '%ncl%';
 '''
 
