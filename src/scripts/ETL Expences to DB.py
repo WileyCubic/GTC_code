@@ -20,7 +20,7 @@ pd.set_option('display.max_colwidth', None)
 # log processing
 #------------------------------#
 
-#writing both to daily log and global log
+
 def log(message):
     now = datetime.now()
     timestamp = now.strftime('%Y-%m-%d %H:%M:%S')

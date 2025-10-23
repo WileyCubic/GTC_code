@@ -29,7 +29,6 @@
 #------------------------------#
 
 
-
 # Importing necessary libraries
 
 import pandas as pd
@@ -40,6 +39,7 @@ import os
 from dotenv import load_dotenv
 import re
 import xlsxwriter as xw
+from sales_CSV_map import create_size_color_maps
 
 # Load environment variables
 load_dotenv()
@@ -57,7 +57,7 @@ pd.set_option('display.float_format', '{:.6f}'.format)  # Optional: Format float
 
 log_file = os.getenv('ETL_to_table_daily_log_file')
 
-#writing both to daily log and global log
+
 def log(message):
     now = datetime.now()
     timestamp = now.strftime('%Y-%m-%d %H:%M:%S')
@@ -285,6 +285,10 @@ def clean_input_data(df):
     if len(shopify_attribute_list) == len(df.columns):
         log('shopify database detected')
         
+        #fill missing customer names
+        
+        df['Shipping Name'] = df.groupby('Name')['Shipping Name'].ffill().bfill()
+        
         #drop unneeded columns
         df = df.drop(columns=['Name',
     'Email',
@@ -384,7 +388,7 @@ def create_pivot_table_by_item(df):
         index=['Item Name', 'Item Modifiers', 'Item Variation','Order Name'], 
         values=['Item Quantity', 'Item Price'], 
         aggfunc={'Item Quantity': 'sum', 'Item Price': 'first'}).sort_index()
-        log('pivot table created from square dataframe')
+        log('pivot table by item created from square dataframe')
         return ptable
     
     #shopify df
@@ -394,7 +398,7 @@ def create_pivot_table_by_item(df):
         index=['Lineitem name', 'Shipping Name'], 
         values=['Lineitem quantity', 'Lineitem price'], 
         aggfunc={'Lineitem quantity': 'sum', 'Lineitem price': 'first'}).sort_index()
-        log('pivot table created from shopify dataframe')
+        log('pivot table by item created from shopify dataframe')
         return ptable
 
 #------------------------------#
@@ -511,7 +515,7 @@ def create_pivot_table_by_name(df):
         index=['Order Name', 'Item Name', 'Item Modifiers', 'Item Variation'], 
         values=['Item Quantity', 'Item Price'], 
         aggfunc={'Item Quantity': 'sum', 'Item Price': 'first'}).sort_index()
-        log('pivot table created from square dataframe')
+        log('pivot table by customer name created from square dataframe')
         return ptable
     
     #shopify df
@@ -521,7 +525,7 @@ def create_pivot_table_by_name(df):
         index=['Shipping Name', 'Lineitem name'], 
         values=['Lineitem quantity', 'Lineitem price'], 
         aggfunc={'Lineitem quantity': 'sum', 'Lineitem price': 'first'}).sort_index()
-        log('pivot table created from shopify dataframe')
+        log('pivot table by customer name created from shopify dataframe')
         return ptable
 
 #------------------------------#
@@ -588,12 +592,12 @@ def add_subtotals_totals_to_by_name(ptable):
         total_iteams = ptable['Lineitem quantity'].values.sum()
         total_price = (ptable['Lineitem price'].values * ptable['Lineitem quantity'].values).sum()
     
-        sub = ptable.groupby(level = 'Shipping name')[['Lineitem quantity']].sum()
+        sub = ptable.groupby(level = 'Shipping Name')[['Lineitem quantity']].sum()
         
         sub.index = pd.MultiIndex.from_frame(
             sub.index.to_frame().assign(
                 **{
-                    'Lineitem Name': 'SubTotal'
+                    'Lineitem name': 'SubTotal'
                 }
             )
         )
@@ -601,9 +605,9 @@ def add_subtotals_totals_to_by_name(ptable):
         out = pd.concat([ptable, sub],axis = 0)
         
         keys = out.index.to_frame(index=False)
-        keys['__is_sub__'] = keys['Lineitem Name'] == 'SubTotal'
+        keys['__is_sub__'] = keys['Lineitem name'] == 'SubTotal'
         orderer = keys.sort_values(
-            ['Shipping name', '__is_sub__', 'Lineitem Name'],
+            ['Shipping Name', '__is_sub__', 'Lineitem name'],
         ).index
         
         out = out.iloc[orderer]
@@ -623,11 +627,119 @@ def add_subtotals_totals_to_by_name(ptable):
         out = pd.concat([out, grand_total], axis=0)
         log('grand total added')
         return out
+    
+    
+#------------------------------#
+# Function to add subtotals and grand totals
+#this does not work and is still being worked on
+#------------------------------#    
+
+#-------------------------------#
+# Function to create size and color maps from sales data
+#-------------------------------#
+
+size_pattern = re.compile(r'\b(XXS|XS|S|M|L|XL|XXL|2XL|3XL|4XL|YOUTH\s*(?:XS|S|M|L|XL|XXL|2XL|3XL)|Regular)\b', re.IGNORECASE)
+
+color_pattern = re.compile(r'\b(Black|White|Ash|Grey Heather|White/Blue|Blue|Green|Gold|Gray|Pink)\b', re.IGNORECASE)
+
+greek_name_pattern = re.compile(r'''\b(Alpha Chi Omega|Alpha Chi|Alpha Delta Pi|ADPi|Alpha Epsilon Phi|AEPhi|Alpha Phi|APhi|Chi Omega|Chi O|Delta Delta Delta|Tri Delta|
+                                Delta Gamma|Dee Gee|DG|Gamma Phi Beta|Gamma Phi|GPhi|Kappa Alpha theta|Theta|Kappa Delta|Kappa Kappa Gamma|Pi Beta phi|Pi Phi|
+                                Sigma Sigma Sigma|Tri Sigma|Zeta Tau Alpha|Zeta Tau|Zeta)\b''', re.IGNORECASE)
+
+
+def square_split_color_size(df):
+    
+    Itemname = df['Item Name'].astype(str)
+    
+    variation = df['Item Variation'].astype(str)
+
+    size = variation.str.extract(size_pattern, expand=False)
+    
+    color = variation.str.replace(size_pattern, '', regex=True)
+    
+    colorfromname = Itemname.str.extract(color_pattern, expand=False)
+    
+    color = (
+        color.str.replace(r'\s*,\s*', ', ', regex=True)
+        .str.strip(' ,')
+    )
+    
+    color = color.mask(color.eq(''))
+    
+    df['Color1'] = color
+    df['Color from Name'] = colorfromname
+    
+    df['Color'] = df['Color1'].combine_first(df['Color from Name'])
+    df.drop(columns=['Color1', 'Color from Name'], inplace=True)
+    
+    df['Size'] = size.str.upper()
+    
+    
+    df.drop(columns=['Item Variation'], inplace=True)
+    
+    
+    return df
+
+def shopify_split_color_size(df):
+    
+    lineitemname = df['Lineitem name'].astype(str)
+
+    size = lineitemname.str.extract(size_pattern, expand=False)
+    
+    color = lineitemname.str.extract(color_pattern, expand=False)
+    
+    greek_name = lineitemname.str.extract(greek_name_pattern, expand=False)
+    
+    df['Greek Name'] = greek_name
+    
+    df['Size'] = size.str.upper()
+    
+    df['Color'] = color
+    
+    
+    return df
+
+
+def table_for_size_color_counts(df):
+    
+    if len(df.columns) == 6:
+        log('square database detected for size and color count table')
+        #make map
+        df = square_split_color_size(df)
+
+        ptable = df.pivot_table(
+            index=['Item Name', 'Size', 'Color'],
+            values=['Item Quantity'],
+            aggfunc={'Item Quantity': 'sum'}).sort_index()
+        
+        ptable.loc[('Grand Total', '', ''), 'Item Quantity'] = ptable['Item Quantity'].sum()
+        log('grand total added to size and color count table')
+        
+        return ptable
+    
+        
+        
+        
+    if len(df.columns) == 4:
+        log('shopify database detected for size and color count table')
+        #make map
+        df = shopify_split_color_size(df)
+
+        ptable = df.pivot_table(
+            index=['Lineitem name', 'Size' ,'Greek Name'],
+            values=['Lineitem quantity'], 
+            aggfunc={'Lineitem quantity': 'sum'}).sort_index()
+        
+        ptable.loc[('Grand Total', '', ''), 'Lineitem quantity'] = ptable['Lineitem quantity'].sum()
+        log('grand total added to size and color count table')
+        
+        return ptable
+    
 
 #-------------------------------#
 # Export to excel doc
 #-------------------------------#
-def excel_export(ptable1, ptable2):
+def excel_export(ptable1, ptable2, ptable3):
     #timestamp for file name
     now = datetime.now()
     timestamp = now.strftime('%m-%d-%Y')
@@ -635,8 +747,9 @@ def excel_export(ptable1, ptable2):
     output_file_path = os.path.join(output_folder, f'Formated Table {timestamp}.xlsx')
     #exporting to excel
     with pd.ExcelWriter(output_file_path, engine='xlsxwriter') as writer:
-        ptable1.to_excel(writer, sheet_name='Sheet1')
-        ptable2.to_excel(writer, sheet_name='Sheet2')
+        ptable1.to_excel(writer, sheet_name='Garment Counts')
+        ptable2.to_excel(writer, sheet_name='By Item Name')
+        ptable3.to_excel(writer, sheet_name='By Customer Name')
         log(f'Excel file expoort')
 
 #------------------------------#
@@ -658,11 +771,11 @@ try:
     ptable_by_name_with_totals = add_subtotals_totals_to_by_name(patable_by_name)
     log('subtotals and grand total added to pivot table by customer name')
     
-    excel_export(ptable_by_item_with_totals, ptable_by_name_with_totals)
+    size_and_color = table_for_size_color_counts(cleaned)
+    log('size and color table created')
+    
+    excel_export(size_and_color, ptable_by_item_with_totals, ptable_by_name_with_totals)
     log('excel file exported')
     
 except Exception as e:
-    log(f'Error in main process: {e}')
-
-
-        
+    log(f'Error: {e}')

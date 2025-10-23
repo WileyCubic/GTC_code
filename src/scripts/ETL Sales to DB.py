@@ -23,7 +23,7 @@ pd.set_option('display.float_format', '{:.6f}'.format)
 # log processing
 #------------------------------#
 
-#writing both to daily log and global log
+
 def log(message):
     now = datetime.now()
     timestamp = now.strftime('%Y-%m-%d %H:%M:%S')
@@ -204,7 +204,7 @@ def transform_square(df):
 def transform_shopify(df):
     try: 
         # dropping cancelled orders and false orders
-        df_mask = df['Paid at'].notna() & df['Cancelled at'].isna()
+        df_mask = df['Cancelled at'].isna()
         df = df.loc[df_mask].copy()
         
         # remove unneeded apostrophes 
@@ -221,6 +221,34 @@ def transform_shopify(df):
                     'Email': 'No Email Given',
                     }, inplace=True)        
         
+        # fill na values in with values given under the same order id but in other rows
+        
+        df['Financial Status'] = df.groupby('Name')['Financial Status'].ffill().bfill()
+        df['Paid at'] = df.groupby('Name')['Paid at'].ffill().bfill()
+        df['Fulfillment Status'] = df.groupby('Name')['Fulfillment Status'].ffill().bfill()
+        df['Fulfilled at'] = df.groupby('Name')['Fulfilled at'].ffill().bfill()
+        
+        df['Billing Name'] = df.groupby('Name')['Billing Name'].ffill().bfill()
+        df['Billing Street'] = df.groupby('Name')['Billing Street'].ffill().bfill()
+        df['Billing Address1'] = df.groupby('Name')['Billing Address1'].ffill().bfill()
+        df['Billing City'] = df.groupby('Name')['Billing City'].ffill().bfill()
+        df['Billing Zip'] = df.groupby('Name')['Billing Zip'].ffill().bfill()
+        df['Billing Province'] = df.groupby('Name')['Billing Province'].ffill().bfill()
+        df['Billing Country'] = df.groupby('Name')['Billing Country'].ffill().bfill()
+        
+        df['Shipping Name'] = df.groupby('Name')['Shipping Name'].ffill().bfill()
+        df['Shipping Street'] = df.groupby('Name')['Shipping Street'].ffill().bfill()
+        df['Shipping Address1'] = df.groupby('Name')['Shipping Address1'].ffill().bfill()
+        df['Shipping City'] = df.groupby('Name')['Shipping City'].ffill().bfill()
+        df['Shipping Zip'] = df.groupby('Name')['Shipping Zip'].ffill().bfill()
+        df['Shipping Province'] = df.groupby('Name')['Shipping Province'].ffill().bfill()
+        df['Shipping Country'] = df.groupby('Name')['Shipping Country'].ffill().bfill()
+        
+        df['Payment Reference'] = df.groupby('Name')['Payment Reference'].ffill().bfill()
+        df['Id'] = df.groupby('Name')['Id'].ffill().bfill()
+        df['Payment ID'] = df.groupby('Name')['Payment ID'].ffill().bfill()
+        df['Payment Reference'] = df.groupby('Name')['Payment Reference'].ffill().bfill()
+
         # convert date columns
         
         df['Paid at'] = pd.to_datetime(df['Paid at'], errors='coerce')
@@ -251,7 +279,7 @@ def transform_shopify(df):
         
         df.fillna({
             'Tax 1 Name': 'No Name Given',
-            'Tax 1 Value': 0,
+            'Tax 1 Value': 0, 
             'Tax 2 Name': 'No Name Given',
             'Tax 2 Value': 0,
             'Tax 3 Name': 'No Name Given',
