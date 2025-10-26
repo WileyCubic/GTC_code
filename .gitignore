@@ -12,3 +12,9 @@ __pycache__/
 .vscode/
 SQL/
 
+
+
+gtc-graphql-api/
+
+node_modules/
+check_endpointANDtoken.js
