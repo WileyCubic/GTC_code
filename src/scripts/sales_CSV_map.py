@@ -184,7 +184,6 @@ def create_size_color_maps():
 
     return square_map, shopify_map
 
-    
 
 
 

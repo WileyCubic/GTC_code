@@ -9,29 +9,22 @@ const shopify = new Shopify({
 const runquery = async () => {
 
     const query = `
-        query suggestedRefund {
-            order(id: "gid://shopify/Order/469306983") {
-                suggestedRefund(refundDuties: [{dutyId: "gid://shopify/Duty/1064114503", refundType: FULL}]) {
-                refundDuties {
-                    amountSet {
-                    shopMoney {
-                        amount
-                        currencyCode
+        query {
+            orders(first: 10) {
+                edges {
+                    cursor
+                    node {
+                        id
                     }
-                    }
-                    originalDuty {
-                    id
-                    }
-                }
-                totalDutiesSet {
-                    shopMoney {
-                    amount
-                    currencyCode
-                    }
-                }
+              }
+                pageInfo {
+                    hasNextPage
+                    hasPreviousPage
+                    startCursor
+                    endCursor
                 }
             }
-        }`;
+      }`;
 
 
     try {

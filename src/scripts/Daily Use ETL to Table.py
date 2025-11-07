@@ -39,7 +39,7 @@ import os
 from dotenv import load_dotenv
 import re
 import xlsxwriter as xw
-from sales_CSV_map import create_size_color_maps
+# from sales_CSV_map import create_size_color_maps
 
 # Load environment variables
 load_dotenv()
