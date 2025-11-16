@@ -332,9 +332,9 @@ try:
     log('Shopify CSV files loaded to df')
     shopify_df = transform_shopify(shopify_df)
     log('Shopify df transformed')
-    df_to_sqlite(shopify_df, 'shopify_orders')
-    log('Shopify df loaded to SQLite')
-    create_mysql_table(shopify_df, 'shopify_orders')
+    # df_to_sqlite(shopify_df, 'raw_shopify_orders')
+    # log('Shopify df loaded to SQLite')
+    create_mysql_table(shopify_df, 'raw_shopify_orders')
     log('Shopify df loaded to MySQL')
 except Exception as e:
     log(f"ERROR: in Shopify ELT process: {e}")  
@@ -348,7 +348,7 @@ try:
     log('Square df transformed')
     df_to_sqlite(square_df, 'square_orders')
     log('Square df loaded to SQLite')
-    create_mysql_table(square_df, 'square_orders')
+    create_mysql_table(square_df, 'raw_square_orders')
     log('Square df loaded to MySQL')
 except Exception as e:
     log(f"ERROR: in Square ELT process: {e}")
