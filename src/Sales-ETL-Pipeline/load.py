@@ -9,6 +9,9 @@ from sqlalchemy import create_engine
 def create_mysql_engine(config: DatabaseConfig) -> Engine:
     password = config.password
     url = f'mysql+mysqlconnector://{config.user}:{password}@{config.host}/{config.database}'
+    log(f'{config.user} connected to MySQL database')
+    return create_engine(url)
+
     
     
 

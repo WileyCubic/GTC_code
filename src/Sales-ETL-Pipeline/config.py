@@ -34,12 +34,12 @@ class DatabaseConfig:
 @dataclass
 class SquareRawPipelineConfig:
     table_name: str = os.getenv('square_raw')
-    csv_pattern: str = os.getenv('*.csv')
+    csv_pattern: str = '*.csv'
     
 @dataclass
 class ShopifyRawPipelineConfig:
     table_name: str = os.getenv('shopify_raw')
-    csv_pattern: str = os.getenv('*.csv')
+    csv_pattern: str = '*.csv'
     
 def load_config() -> tuple[SquarePathsConfig, ShopifyPathsConfig, DatabaseConfig, SquareRawPipelineConfig, ShopifyRawPipelineConfig]:
     square_paths = SquarePathsConfig()

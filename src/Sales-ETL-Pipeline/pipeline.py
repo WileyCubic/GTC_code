@@ -4,7 +4,7 @@ from pathlib import Path
 from Utils import log
 from config import load_config
 from extract import get_csv_files, csv_to_dataframe
-# from raw_transform import transform_dataframe # Uncomment when finished
+from raw_transform import transform_square, transform_shopify
 from load import create_mysql_engine, create_mysql_table_if_replace
 
 
@@ -13,9 +13,9 @@ from load import create_mysql_engine, create_mysql_table_if_replace
 def process_file(csv_path: Path, table_name: str, engine, source_name: str) -> None:
     df = csv_to_dataframe(csv_path)
     if source_name == 'Square':
-        pass  # df = transform_square_dataframe(df)  # Uncomment when finished
+        df = transform_square(df)
     elif source_name == 'Shopify':
-        pass
+        df = transform_shopify(df)
     else:
         log(f"Unknown source name: {source_name}")
         return
@@ -25,13 +25,13 @@ def process_file(csv_path: Path, table_name: str, engine, source_name: str) -> N
     
 def run_pipeline() -> None:
     
-    # Load database engine
-    
-    engine = create_mysql_engine(db_cfg)
-    
     # Load configurations
     
     square_paths_cfg, shopify_paths_cfg, db_cfg, square_pipeline_cfg, shopify_pipeline_cfg = load_config()
+
+    # Load database engine
+    
+    engine = create_mysql_engine(db_cfg)
     
     # Process Square CSV files
     
@@ -40,8 +40,7 @@ def run_pipeline() -> None:
         log(f"No Square CSV files found in {square_paths_cfg.input_dir}")
         return
     log(f"Starting ETL for {len(square_csv_files)} Square file(s) into '{square_pipeline_cfg.table_name}'")
-    for csv_path in square_csv_files:
-        process_file(csv_path, table_name=square_pipeline_cfg.table_name, engine=engine, source_name='Square')
+    process_file(square_csv_files, table_name=square_pipeline_cfg.table_name, engine=engine, source_name='Square')
         
         
     # Process Shopify CSV files
@@ -50,9 +49,9 @@ def run_pipeline() -> None:
         log(f"No Shopify CSV files found in {shopify_paths_cfg.input_dir}")
         return
     log(f"Starting ETL for {len(shopify_csv_files)} Shopify file(s) into '{shopify_pipeline_cfg.table_name}'")
-    for csv_path in shopify_csv_files:
-        process_file(csv_path, table_name=shopify_pipeline_cfg.table_name, engine=engine, source_name='Shopify')
-        
+    process_file(shopify_csv_files, table_name=shopify_pipeline_cfg.table_name, engine=engine, source_name='Shopify')
+
+
 
 if __name__ == "__main__":
     run_pipeline()
