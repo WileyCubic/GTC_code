@@ -19,3 +19,5 @@ gtc-graphql-api/
 
 node_modules/
 check_endpointANDtoken.js
+
+etl_pipeline/
