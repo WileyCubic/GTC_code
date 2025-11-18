@@ -3,7 +3,6 @@ from datetime import datetime
 from dotenv import load_dotenv
 load_dotenv()
 import sys
-from logging_utils.logging_config import setup_logging
 import logging
 
 

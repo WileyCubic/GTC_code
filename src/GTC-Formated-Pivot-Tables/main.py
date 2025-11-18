@@ -25,37 +25,37 @@ def main():
     input_df = csv_to_dataframe(files)
 
     cleaned_df = clean_input_data(input_df)
-    
-    logger('✅: input data cleaned and ready for pivot table creation')
-    
+
+    logger.info('[Main]: input data cleaned and ready for pivot table creation')
+
     # Size Color Pivot Table
 
     size_and_color = table_for_size_color_counts(cleaned_df)  
-    logger.info('✅: size and color pivot table created')
+    logger.info('[Main]: size and color pivot table created')
     
 
     # By item Pivot Table
     ptable_by_item = create_pivot_table_by_item(cleaned_df)
-    logger.info('✅: by item pivot table created')
-    
-    ptable_by_item_with_totals = add_subtotals_totals_to_by_item(ptable_by_item) 
-    logger.info('✅: subtotals and grand totals added to by item pivot table')
-    
+    logger.info('[Main]: by item pivot table created')
+
+    ptable_by_item_with_totals = add_subtotals_totals_to_by_item(ptable_by_item)
+    logger.info('[Main]: subtotals and grand totals added to by item pivot table')
+
 
     # By Name Pivot Table
 
     ptable_by_name = create_pivot_table_by_name(cleaned_df)
-    logger.info('✅: by name pivot table created')
+    logger.info('[Main]: by name pivot table created')
 
     ptable_by_name_with_totals = add_subtotals_totals_to_by_name(ptable_by_name)
-    logger.info('✅: subtotals and grand totals added to by name pivot table')
+    logger.info('[Main]: subtotals and grand totals added to by name pivot table')
 
     # Export to Excel
 
     output_folder = get_output_folder()
 
     excel_export(size_and_color, ptable_by_item_with_totals, ptable_by_name_with_totals, output_folder)
-    logger.info('✅ all pivot tables exported to excel')
+    logger.info('[Main]: all pivot tables exported to excel')
 
 
 if __name__ == '__main__':

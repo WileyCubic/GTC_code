@@ -49,7 +49,7 @@ def setup_logging(log_file_path=None, project_name=None, force_setup=False):
     # Add handlers to root logger
     root_logger.addHandler(file_handler)
     root_logger.addHandler(console_handler)
-    root_logger.setLevel(logging.INFO)
+    root_logger.setLevel(logging.DEBUG)
 
 def ensure_logging_configured():
     """Ensure logging is configured with basic setup if not already done"""
