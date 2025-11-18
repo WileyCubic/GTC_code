@@ -1,8 +1,10 @@
 
-from Utils import log
+import logging
+from Utils import logger
 import pandas as pd
 
-
+logger = logging.getLogger(__name__)
+logger.info("Pivot_Table_by_Item module loaded.")
 
 #------------------------------#
 # Function to create pivot table by customer name  
@@ -13,22 +15,22 @@ def create_pivot_table_by_item(df):
     #check which df it is
     #square df
     if len(df.columns) == 6:
-        log('square database detected for pivot table creation')
+        logger.info('square database detected for pivot table creation')
         ptable = df.pivot_table(
         index=['Item Name', 'Item Modifiers', 'Item Variation','Order Name'], 
         values=['Item Quantity', 'Item Price'], 
         aggfunc={'Item Quantity': 'sum', 'Item Price': 'first'}).sort_index()
-        log('pivot table by item created from square dataframe')
+        logger.info('pivot table by item created from square dataframe')
         return ptable
     
     #shopify df
     if len(df.columns) == 4:
-        log('shopify database detected for pivot table creation')
+        logger.info('shopify database detected for pivot table creation')
         ptable = df.pivot_table(
         index=['Lineitem name', 'Shipping Name'], 
         values=['Lineitem quantity', 'Lineitem price'], 
         aggfunc={'Lineitem quantity': 'sum', 'Lineitem price': 'first'}).sort_index()
-        log('pivot table by item created from shopify dataframe')
+        logger.info('pivot table by item created from shopify dataframe')
         return ptable
 
 #------------------------------#
@@ -42,7 +44,7 @@ def add_subtotals_totals_to_by_item(ptable) -> pd.DataFrame:
     # this could potentially be refactored to go baised off of the length of the index
     
     if len(ptable.index.names) == 4:
-        log('square pivot table detected\n Adding in subtotals and grand totals')
+        logger.info('square pivot table detected\n Adding in subtotals and grand totals')
         total_items_sold = ptable['Item Quantity'].values.sum()
         total_price_sold = (ptable['Item Price'].values * ptable['Item Quantity'].values).sum()
         
@@ -71,7 +73,7 @@ def add_subtotals_totals_to_by_item(ptable) -> pd.DataFrame:
         ).index
 
         out = out.iloc[orderer]
-        log('subtotals added')
+        logger.info('subtotals added')
         
         # adding the grand total to the end of the table
         grand_index = pd.MultiIndex.from_tuples(
@@ -85,13 +87,13 @@ def add_subtotals_totals_to_by_item(ptable) -> pd.DataFrame:
         )
         
         out = pd.concat([out, grand_total], axis=0)
-        log('grand total added')
+        logger.info('grand total added')
         return out
     
     #shopify ptable
     # this needs to be done
     if len(ptable.index.names) == 2:
-        log('shopify pivot table detected\n Adding in subtotals and grand totals')
+        logger.info('shopify pivot table detected\n Adding in subtotals and grand totals')
         total_iteams = ptable['Lineitem quantity'].values.sum()
         total_price = (ptable['Lineitem price'].values * ptable['Lineitem quantity'].values).sum()
     
@@ -114,7 +116,7 @@ def add_subtotals_totals_to_by_item(ptable) -> pd.DataFrame:
         ).index
         
         out = out.iloc[orderer]
-        log('subtotals added')
+        logger.info('subtotals added')
         
         grand_index = pd.MultiIndex.from_tuples(
             [('Grand Total', '')],
@@ -128,5 +130,5 @@ def add_subtotals_totals_to_by_item(ptable) -> pd.DataFrame:
         )
         
         out = pd.concat([out, grand_total], axis=0)
-        log('grand total added')
+        logger.info('grand total added')
         return out

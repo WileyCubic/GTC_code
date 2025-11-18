@@ -1,7 +1,10 @@
-from Utils import log
+from Utils import logger
+import logging
 import pandas as pd
 import re
 
+logger = logging.getLogger(__name__)
+logger.info("CSV_map module loaded.")
 
 #-------------------------------#
 # patterns
@@ -50,6 +53,7 @@ def square_split_color_size(df):
     
     df.drop(columns=['Item Variation'], inplace=True)
     
+    logger.info("Square color and size mapping completed.")
     
     return df
 
@@ -69,5 +73,6 @@ def shopify_split_color_size(df):
     
     df['Color'] = color
     
+    logger.info("Shopify color and size mapping completed.")
     
     return df

@@ -1,4 +1,5 @@
-from Utils import log
+from Utils import logger
+import logging
 import pandas as pd
 import os
 import glob
@@ -6,6 +7,9 @@ import numpy as np
 import re
 from dotenv import load_dotenv
 load_dotenv()
+
+logger = logging.getLogger(__name__)
+logger.info("ETL_for_CSV_data module loaded.")
 
 #------------------------------#
 # Extracting data from csv files
@@ -35,27 +39,27 @@ def csv_to_dataframe(files) -> pd.DataFrame:
         #use error handeling to catch any errors
     try:
         if len(square_csv_files) > 0:
-            log(f'square csv files found: {len(square_csv_files)}')
+            logger.info(f'square csv files found: {len(square_csv_files)}')
             # processing the square files
             square_df = pd.concat([pd.read_csv(f) for f in square_csv_files], ignore_index=True)
             return square_df
         
         if len(shopify_csv_files) > 0:
-            log(f'Shopify csv files found: {len(shopify_csv_files)}')    
+            logger.info(f'Shopify csv files found: {len(shopify_csv_files)}')
             # processing the shopify files
             shopify_df = pd.concat([pd.read_csv(f) for f in shopify_csv_files], ignore_index=True)
             return shopify_df
         
         if len(square_csv_files) == 0 and len(shopify_csv_files) == 0:
-            log('No recognizable csv files found')
+            logger.error('No recognizable csv files found')
             return ImportError
         
         if len(square_csv_files) > 0 and len(shopify_csv_files) > 0:
-            log('Both square and shopify csv files found')
+            logger.warning('Both square and shopify csv files found')
             return ImportError
         
     except Exception as e:
-        log(f'ERROR: in csv_to_dataframe function: {e}')
+        logger.error(f'csv_to_dataframe function: {e}')
         return e
 
 #------------------------------#   
@@ -185,7 +189,7 @@ def clean_input_data(df) -> pd.DataFrame:
     
     #cleaning square data
     if len(square_attribute_list) == len(df.columns):
-        log('square database detected')
+        logger.info('square database detected')
         
         #drop unneeded columns
         df = df.drop(columns=['Order',
@@ -219,12 +223,12 @@ def clean_input_data(df) -> pd.DataFrame:
         #formating columns 
         df['Item Quantity'] = df['Item Quantity'].astype(int)
         df = df.replace({np.nan: 'None'})
-        log('square dataframe cleaned')
+        logger.info('square dataframe cleaned')
         return df
     
     
     if len(shopify_attribute_list) == len(df.columns):
-        log('shopify database detected')
+        logger.info('shopify database detected')
         
         #fill missing customer names
         
@@ -310,9 +314,9 @@ def clean_input_data(df) -> pd.DataFrame:
     
         #formatting columns
         df = df.replace({np.nan: 'None'})
-        log('shopify dataframe cleaned')
+        logger.info('shopify dataframe cleaned')
         return df
     
     else:
-        log('unrecognizable database detected')
+        logger.warning('unrecognizable database detected')
         return None

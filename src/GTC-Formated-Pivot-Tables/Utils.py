@@ -14,8 +14,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from logging_utils.logging_config import setup_logging
 
 setup_logging(
-    log_file_path=os.getenv('ETL_Sales_to_DB_log_file'),
-    project_name= 'SalesETL',
+    log_file_path=os.getenv('ETL_to_table_daily_log_file'),
+    project_name= 'Formated-Pivot-Tables',
     force_setup=True
 )
 

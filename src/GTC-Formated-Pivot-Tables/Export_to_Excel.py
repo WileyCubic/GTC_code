@@ -1,10 +1,14 @@
-from Utils import log
+from Utils import logger
+import logging
 import os
 from datetime import datetime
 import pandas as pd
 import xlsxwriter
 from dotenv import load_dotenv
 load_dotenv()
+
+logger = logging.getLogger(__name__)
+logger.info("Export_to_Excel module loaded.")
 
 #------------------------------#
 # Get the output folder path
@@ -30,4 +34,4 @@ def excel_export(ptable1, ptable2, ptable3, output_folder) -> None:
         ptable1.to_excel(writer, sheet_name='Garment Counts')
         ptable2.to_excel(writer, sheet_name='By Item Name')
         ptable3.to_excel(writer, sheet_name='By Customer Name')
-        log(f'Excel file exported to {output_file_path}')
+        logger.info(f'Excel file exported to {output_file_path}')

@@ -1,7 +1,8 @@
 # not working at the moment as mysql package not updated
 
 
-from Utils import log
+from Utils import logger
+import logging
 import os
 import sqlite3
 import mysql.connector as mysql
@@ -12,6 +13,8 @@ import numpy as np
 load_dotenv()
 from datetime import datetime
 
+logger = logging.getLogger(__name__)
+logger.info("ETL_from_query module loaded.")
 
 # MySQL Database Connection
 
@@ -22,11 +25,11 @@ def load_mysql_env_vars():
         password= os.getenv('Mysql_password')
         database= os.getenv('Mysql_database')
         
-        log("MySQL environment variables loaded successfully")
+        logger.info("MySQL environment variables loaded successfully")
         
     except Exception as e:
         
-        log(f"ERROR: loading MySQL environment variables: {e}")
+        logger.error(f"loading MySQL environment variables: {e}")
     return host, user, password, database
         
 def mysql_connect(host, user, password, database):
@@ -38,9 +41,9 @@ def mysql_connect(host, user, password, database):
             database=database
         )
         if Mysql_connection.is_connected():
-            log("Successfully connected to MySQL database")
+            logger.info("Successfully connected to MySQL database")
     except mysql.Error as e:
-        log(f"ERROR: connecting to MySQL Platform: {e}")
+        logger.error(f"connecting to MySQL Platform: {e}")
         
     return Mysql_connection
 
@@ -52,7 +55,7 @@ def mysql_cursor(Mysql_connection):
     
     Mysql_cursor = Mysql_connection.cursor()
     
-    log("MySQL cursor created")
+    logger.info("MySQL cursor created")
     return Mysql_cursor
 
 # MySQL SQLAlchemy engine
@@ -60,14 +63,14 @@ def mysql_sqlalchemy_engine(user, password, host, database):
     
     mysql_engine = create_engine(f'mysql+mysqlconnector://{user}:{password}@{host}/{database}')
     
-    log("MySQL SQLAlchemy engine created successfully")
+    logger.info("MySQL SQLAlchemy engine created successfully")
     
     return mysql_engine
 
 # Function to execute MySQL queries
 def sql_query(query, connection):
     df = pd.read_sql(query, connection)
-    log(f'Executed: {query}')
+    logger.info(f'Executed: {query}')
     return df
 
 
