@@ -1,16 +1,31 @@
 import os
+import logging
 from datetime import datetime
+import sys
 from dotenv import load_dotenv
 load_dotenv()
 import pandas as pd
 
 
-def log(message: str) -> None:
-    now = datetime.now()
-    timestamp = now.strftime('%Y-%m-%d %H:%M:%S')
-    with open(os.getenv('ETL_Sales_to_DB_log_file'), 'a' )as log:
-        log.write(f'{message}, {timestamp}\n')
-    print(f'Log entry added: {message}, {timestamp}')
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+# import logging
+from logging_utils.logging_config import setup_logging
+
+setup_logging(
+    log_file_path=os.getenv('ETL_Sales_to_DB_log_file'),
+    project_name= 'SalesETL',
+    force_setup=True
+)
+
+logger = logging.getLogger(__name__)
+
+# def log(message: str) -> None:
+#     now = datetime.now()
+#     timestamp = now.strftime('%Y-%m-%d %H:%M:%S')
+#     with open(os.getenv('ETL_Sales_to_DB_log_file'), 'a' )as log:
+#         log.write(f'{message}, {timestamp}\n')
+#     print(f'Log entry added: {message}, {timestamp}')
     
 def format_phone_number(phone):
     if pd.isna(phone):
@@ -28,5 +43,7 @@ def format_phone_number(phone):
         else:
             return ValueError
     except Exception as e:
-        log(f'ERROR formatting phone number {phone}: {e}')
+        logger.error(f"Error formatting phone number {phone}: {e}")
         return phone
+    
+logger.info('Sales-ETL-Pipeline Utils initialized.')

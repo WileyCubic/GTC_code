@@ -1,7 +1,9 @@
 import pandas as pd
-from Utils import log, format_phone_number
+from Utils import logger, format_phone_number
+import logging
 
-
+logger = logging.getLogger(__name__)
+logger.info("Starting ETL pipeline")
 
 def transform_square(df):
     # fill na values
@@ -10,9 +12,9 @@ def transform_square(df):
     
     try:                # convert is working
         df['Order Date'] = pd.to_datetime(df['Order Date'], errors='raise')
-        log('no errors found in order_date conversion')
+        logger.info('no errors found in order_date conversion')
     except Exception as e:
-        log(f'ERROR converting order_date: {e}')
+        logger.error(f'converting order_date: {e}')
         
     df['Order Subtotal'] = df['Order Subtotal'].astype(float).round(2)
     
@@ -26,9 +28,9 @@ def transform_square(df):
     
     try:                # convert is working
         df['Fulfillment Date'] = pd.to_datetime(df['Fulfillment Date'], errors='raise')
-        log('no errors found in fulfillment_date conversion')
+        logger.info('no errors found in fulfillment_date conversion')
     except Exception as e:
-        log(f'ERROR: converting fulfillment_date: {e}')
+        logger.error(f'converting fulfillment_date: {e}')
         
     df['Recipient Phone'] = df['Recipient Phone'].apply(format_phone_number).fillna(0)
     
@@ -42,7 +44,7 @@ def transform_square(df):
     df.sort_values(by='Order Date', inplace=True)
     df.reset_index(drop=True, inplace=True)
     
-    log('Square data transformation complete')
+    logger.info('Square data transformation complete')
 
     return df
 
@@ -141,13 +143,13 @@ def transform_shopify(df):
         df['Tax 5 Value'] = df['Tax 5 Value'].astype(float).round(2)     
         
     except Exception as e:
-        log(f'ERROR converting: {e}')
+        logger.error(f'converting: {e}')
     
     
     # Sort by Order Date and reset index
     df.sort_values(by='Name', inplace=True)
     df.reset_index(drop=True, inplace=True)
     
-    log('Shopify data transformation complete')
+    logger.info('Shopify data transformation complete')
     
     return df
