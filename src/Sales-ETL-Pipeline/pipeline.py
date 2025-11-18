@@ -4,7 +4,7 @@ from Utils import logger
 from config import load_config
 from extract import get_csv_files, csv_to_dataframe
 from raw_transform import transform_square, transform_shopify
-from load import create_mysql_engine, create_mysql_table_if_replace
+from load import create_mysql_engine, create_mysql_table_if_replace, close_connection
 
 logger = logging.getLogger(__name__)
 logger.info("Starting ETL pipeline")
@@ -51,6 +51,26 @@ def run_pipeline() -> None:
     logger.info(f"Starting ETL for {len(shopify_csv_files)} Shopify file(s) into '{shopify_pipeline_cfg.table_name}'")
     process_file(shopify_csv_files, table_name=shopify_pipeline_cfg.table_name, engine=engine, source_name='Shopify')
 
+
+    # add steps needed for a table to be made for lineitem analysis
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # Close database connection
+    close_connection(engine)
 
 
 if __name__ == "__main__":

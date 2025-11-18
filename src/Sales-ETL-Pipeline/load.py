@@ -17,9 +17,6 @@ def create_mysql_engine(config: DatabaseConfig) -> Engine:
     logger.info(f'{config.user} connected to MySQL database')
     return create_engine(url)
 
-    
-    
-
 
 def create_mysql_table_if_replace(df: pd.DataFrame, table_name: str, engine) -> None:
     """Create MySQL table if it does not exist based on DataFrame schema."""
@@ -32,3 +29,9 @@ def create_mysql_table_if_replace(df: pd.DataFrame, table_name: str, engine) -> 
     )
     logger.info(f"Table '{table_name}' created successfully")
     
+def close_connection(engine: Engine) -> None:
+    try:
+        engine.dispose()
+        logger.info("MySQL connection closed")
+    except Exception as e:
+        logger.error(f"ERROR: closing MySQL connection: {e}")

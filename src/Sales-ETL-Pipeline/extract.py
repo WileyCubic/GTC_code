@@ -17,3 +17,7 @@ def get_csv_files(input_dir: Path, pattern: str = "*.csv") -> list[Path]:
 def csv_to_dataframe(csv_path: list[Path]) -> pd.DataFrame:
     logger.info(f'Reading CSV file(s): {len(csv_path)}')
     return pd.concat((pd.read_csv(f) for f in csv_path), ignore_index=True)
+
+def query_data(df: pd.DataFrame, query: str) -> pd.DataFrame:
+    logger.info(f'Executing query on DataFrame')
+    return pd.read_sql_query(query, df)
