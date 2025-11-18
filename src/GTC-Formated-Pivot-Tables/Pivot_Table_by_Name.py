@@ -92,7 +92,7 @@ def add_subtotals_totals_to_by_name(ptable):
     #shopify ptable
     # this needs to be done
     if len(ptable.index.names) == 2:
-        logger.info('shopify pivot table detected\n Adding in subtotals and grand totals')
+        logger.info('shopify pivot table detected Adding in subtotals and grand totals')
         total_iteams = ptable['Lineitem quantity'].values.sum()
         total_price = (ptable['Lineitem price'].values * ptable['Lineitem quantity'].values).sum()
     
