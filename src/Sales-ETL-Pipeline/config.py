@@ -48,3 +48,7 @@ def load_config() -> tuple[SquarePathsConfig, ShopifyPathsConfig, DatabaseConfig
     square_pipeline = SquareRawPipelineConfig()
     shopify_pipeline = ShopifyRawPipelineConfig()
     return square_paths, shopify_paths, db, square_pipeline, shopify_pipeline
+
+def db_config() -> DatabaseConfig:
+    db = DatabaseConfig()
+    return db
