@@ -51,6 +51,11 @@ log("MySQL cursor created")
 mysql_engine = create_engine(f'mysql+mysqlconnector://{user}:{password}@{host}/{database}')
 log("MySQL SQLAlchemy engine created successfully")
 
+#sqlite Database Connection
+sqlite_conn = sqlite3.connect(os.getenv('SQLite_database'))
+log("Connected to SQLite database")
+
+
 # Function to execute MySQL queries
 def sql_query(query, connection):
     df = pd.read_sql(query, connection)
@@ -74,7 +79,7 @@ def export_to_csv(df):
 
 # run query and export csv
 
-export_to_csv(sql_query(query, mysql_engine))
+export_to_csv(sql_query(query, sqlite_conn))
 
 
 # Close MySQL connection
