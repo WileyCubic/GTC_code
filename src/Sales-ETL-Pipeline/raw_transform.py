@@ -1,6 +1,8 @@
 import pandas as pd
 from Utils import logger, format_phone_number
 import logging
+import numpy as np
+import datetime
 
 logger = logging.getLogger(__name__)
 logger.info("Starting ETL pipeline")
@@ -98,11 +100,13 @@ def transform_shopify(df):
 
         # convert date columns
         
-        df['Paid at'] = pd.to_datetime(df['Paid at'], errors='coerce')
+        df['Paid at'] = df['Paid at'].apply(datetime.datetime.date)
     
-        df['Fulfilled at'] = pd.to_datetime(df['Fulfilled at'], errors='coerce')
+        df['Fulfilled at'] = df['Fulfilled at'].apply(datetime.datetime.date)
         
-        df['Created at'] = pd.to_datetime(df['Created at'], errors='raise')
+        df['Created at'] = df['Created at'].apply(datetime.datetime.date)
+        
+        # format phone numbers
         
         df['Billing Phone'] = df['Billing Phone'].apply(format_phone_number).fillna(0)
         

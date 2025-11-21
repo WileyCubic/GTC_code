@@ -23,11 +23,15 @@ class ShopifyPathsConfig:
 # Classes for database configuration
 
 @dataclass
-class DatabaseConfig:
+class MysqlDatabaseConfig:
     host: str = os.getenv('Mysql_host')
     user: str = os.getenv('Mysql_user')
     password: str = os.getenv('Mysql_password')
     database: str = os.getenv('Mysql_database')
+    
+@dataclass
+class SqliteDatabaseConfig:
+    database_path: str = os.getenv('SQLite_database')
     
 # Classes for pipeline configuration
 
@@ -57,18 +61,19 @@ class LineitemPatternsConfig:
                                 Zip Hoodie|T-Shirt|Sweatshirt|Baseball Cap|Tunic Sweater)\b''', re.IGNORECASE)
 
 # Functions to load configurations
-    
-def load_config() -> tuple[SquarePathsConfig, ShopifyPathsConfig, DatabaseConfig, SquareRawPipelineConfig, ShopifyRawPipelineConfig]:
+
+def load_config() -> tuple[SquarePathsConfig, ShopifyPathsConfig, MysqlDatabaseConfig, ShopifyPathsConfig, SquareRawPipelineConfig, ShopifyRawPipelineConfig]:
     square_paths = SquarePathsConfig()
     shopify_paths = ShopifyPathsConfig()
-    db = DatabaseConfig()
+    Mysqldb = MysqlDatabaseConfig()
+    SqliteDB = SqliteDatabaseConfig()
     square_pipeline = SquareRawPipelineConfig()
     shopify_pipeline = ShopifyRawPipelineConfig()
-    return square_paths, shopify_paths, db, square_pipeline, shopify_pipeline
+    return square_paths, shopify_paths, Mysqldb, SqliteDB, square_pipeline, shopify_pipeline
 
-def db_config() -> DatabaseConfig:
-    db = DatabaseConfig()
-    return db
+def db_config() -> MysqlDatabaseConfig:
+    Mysqldb = MysqlDatabaseConfig()
+    return Mysqldb
 
 def lineitem_patterns_config() -> LineitemPatternsConfig:
     patterns = LineitemPatternsConfig()
