@@ -5,12 +5,15 @@ import sys
 from dotenv import load_dotenv
 load_dotenv()
 import pandas as pd
-
-# help find logging_utils module
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-
-# import logging
 from logging_utils.logging_config import setup_logging
+
+
+#----------------------------------------#
+# LOGGING CONFIGURATION
+#----------------------------------------#
+
+# help to find logging_utils module
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 setup_logging(
     log_file_path=os.getenv('ETL_Sales_to_DB_log_file'),
@@ -18,9 +21,14 @@ setup_logging(
     force_setup=True
 )
 
+# initialize logger
+
 logger = logging.getLogger(__name__)
 
-    
+#----------------------------------------#
+# ADDITIONAL UTILS FUNCTIONS
+#----------------------------------------#
+
 def format_phone_number(phone):
     if pd.isna(phone):
         return 0

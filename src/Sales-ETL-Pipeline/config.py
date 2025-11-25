@@ -5,11 +5,11 @@ import re
 import os
 
 from dotenv import load_dotenv
-
-# Pull values from .env if present
 load_dotenv()
 
+#----------------------------------------#
 # Classes for path configuration
+#----------------------------------------#
 
 @dataclass
 class SquarePathsConfig:
@@ -20,8 +20,10 @@ class SquarePathsConfig:
 class ShopifyPathsConfig:
     input_dir: Path = Path(os.getenv('ETL_Sales_to_DB_shopify_CSV_input'))
     log_file: Path = Path(os.getenv('ETL_Sales_to_DB_log_file'))
-
+    
+#----------------------------------------#
 # Classes for database configuration
+#----------------------------------------#
 
 @dataclass
 class MysqlDatabaseConfig:
@@ -33,8 +35,10 @@ class MysqlDatabaseConfig:
 @dataclass
 class SqliteDatabaseConfig:
     database_path: str = os.getenv('SQLite_database')
-    
+
+#----------------------------------------#    
 # Classes for pipeline configuration
+#----------------------------------------#
 
 @dataclass
 class SquareRawPipelineConfig:
@@ -46,8 +50,9 @@ class ShopifyRawPipelineConfig:
     table_name: str = os.getenv('shopify_raw')
     csv_pattern: str = '*.csv'
 
-
+#----------------------------------------#
 # Classes for regex patterns
+#----------------------------------------#
 
 PATTERN_FILE = Path(os.getenv('Sales_ETL_lineitem_patterns'))
 
@@ -84,8 +89,9 @@ class LineitemPatternsConfig:
         self.organization_pattern = _compile_word_pattern(lists['organization_names'])
         self.garment_patterns = _compile_partial_pattern(lists['garments'])
 
-
+#----------------------------------------#
 # Functions to load configurations
+#----------------------------------------#
 
 def load_config() -> tuple[SquarePathsConfig, ShopifyPathsConfig, MysqlDatabaseConfig, ShopifyPathsConfig, SquareRawPipelineConfig, ShopifyRawPipelineConfig]:
     square_paths = SquarePathsConfig()
