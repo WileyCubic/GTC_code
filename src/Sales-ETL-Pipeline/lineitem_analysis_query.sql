@@ -17,4 +17,4 @@ select `Paid at` as OrderDate,
        'Shopify' as Source
 from shopify_raw
 
-ORDER BY OrderDate DESC;
+ORDER BY OrderDate ASC;
