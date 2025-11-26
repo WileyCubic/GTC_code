@@ -21,6 +21,11 @@ class ShopifyPathsConfig:
     input_dir: Path = Path(os.getenv('ETL_Sales_to_DB_shopify_CSV_input'))
     log_file: Path = Path(os.getenv('ETL_Sales_to_DB_log_file'))
     
+#come back to this later    
+@dataclass
+class QueryPathsConfig:
+    lineitem_analysis: Path = Path(os.getenv('lineitem_analysis_query'))
+    
 #----------------------------------------#
 # Classes for database configuration
 #----------------------------------------#
@@ -49,6 +54,10 @@ class SquareRawPipelineConfig:
 class ShopifyRawPipelineConfig:
     table_name: str = os.getenv('shopify_raw')
     csv_pattern: str = '*.csv'
+    
+@dataclass
+class LineitemAnalysisPipelineConfig:
+    table_name: str = os.getenv('lineitem_analysis')
 
 #----------------------------------------#
 # Classes for regex patterns
@@ -93,18 +102,31 @@ class LineitemPatternsConfig:
 # Functions to load configurations
 #----------------------------------------#
 
-def load_config() -> tuple[SquarePathsConfig, ShopifyPathsConfig, MysqlDatabaseConfig, ShopifyPathsConfig, SquareRawPipelineConfig, ShopifyRawPipelineConfig]:
+# def load_config() -> tuple[SquarePathsConfig, ShopifyPathsConfig, MysqlDatabaseConfig, ShopifyPathsConfig, SquareRawPipelineConfig, ShopifyRawPipelineConfig]:
+#     square_paths = SquarePathsConfig()
+#     shopify_paths = ShopifyPathsConfig()
+#     Mysqldb = MysqlDatabaseConfig()
+#     SqliteDB = SqliteDatabaseConfig()
+#     square_pipeline = SquareRawPipelineConfig()
+#     shopify_pipeline = ShopifyRawPipelineConfig()
+#     return square_paths, shopify_paths, Mysqldb, SqliteDB, square_pipeline, shopify_pipeline
+
+def path_config() -> tuple[SquarePathsConfig, ShopifyPathsConfig, QueryPathsConfig]:
     square_paths = SquarePathsConfig()
     shopify_paths = ShopifyPathsConfig()
+    query_paths = QueryPathsConfig()
+    return square_paths, shopify_paths, query_paths
+
+def db_config() -> tuple[MysqlDatabaseConfig, SqliteDatabaseConfig]:
     Mysqldb = MysqlDatabaseConfig()
     SqliteDB = SqliteDatabaseConfig()
+    return Mysqldb, SqliteDB
+
+def pipeline_config() -> tuple[SquareRawPipelineConfig, ShopifyRawPipelineConfig, LineitemAnalysisPipelineConfig]:
     square_pipeline = SquareRawPipelineConfig()
     shopify_pipeline = ShopifyRawPipelineConfig()
-    return square_paths, shopify_paths, Mysqldb, SqliteDB, square_pipeline, shopify_pipeline
-
-def db_config() -> MysqlDatabaseConfig:
-    Mysqldb = MysqlDatabaseConfig()
-    return Mysqldb
+    lineitem_pipeline = LineitemAnalysisPipelineConfig()
+    return square_pipeline, shopify_pipeline, lineitem_pipeline
 
 def lineitem_patterns_config() -> LineitemPatternsConfig:
     patterns = LineitemPatternsConfig()

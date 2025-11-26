@@ -56,7 +56,7 @@ def create_mysql_table_if_replace(df: pd.DataFrame, table_name: str, engine) -> 
     
 # Load DataFrame into SQLite table REPLACE IF EXISTS
 
-def sqlite_table_if_replace(df: pd.DataFrame, table_name: str, conn) -> None:
+def create_sqlite_table_if_replace(df: pd.DataFrame, table_name: str, conn) -> None:
     """Create SQLite table if it does not exist based on DataFrame schema."""
     logger.info(f"Creating table '{table_name}' in SQLite database")
     df.to_sql(

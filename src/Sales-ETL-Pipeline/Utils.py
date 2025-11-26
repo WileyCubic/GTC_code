@@ -5,7 +5,6 @@ import sys
 from dotenv import load_dotenv
 load_dotenv()
 import pandas as pd
-from logging_utils.logging_config import setup_logging
 
 
 #----------------------------------------#
@@ -14,6 +13,8 @@ from logging_utils.logging_config import setup_logging
 
 # help to find logging_utils module
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+from logging_utils.logging_config import setup_logging
 
 setup_logging(
     log_file_path=os.getenv('ETL_Sales_to_DB_log_file'),
