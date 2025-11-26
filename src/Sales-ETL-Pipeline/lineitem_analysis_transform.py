@@ -2,60 +2,83 @@ import pandas as pd
 import numpy as np
 from Utils import logger
 import logging
-import re
-from load import create_mysql_engine
-from extract import query_data
-from config import db_config, lineitem_patterns_config
+from dotenv import load_dotenv
+load_dotenv()
+from datetime import datetime
+
+from config import lineitem_patterns_config
 
 
-db = db_config()
-engine = create_mysql_engine(db)
-
-query = '''
-select `Order Date` as OrderDate,
-       `Item Quantity` as ItemQuantity,
-       CONCAT_WS(' - ', `Item Name`, `Item Variation`) as ItemName,
-       `Item Price` as ItemPrice,
-       'Square' as Source
-from square_raw
-
-UNION ALL
-
-select `Paid at` as OrderDate,
-       `Lineitem quantity` as ItemQuantity,
-       `Lineitem name` as ItemName,
-       `Lineitem price` as ItemPrice,
-       'Shopify' as Source
-from shopify_raw
-
-ORDER BY OrderDate DESC;
-'''
-
-df = query_data(engine, query)
-df.shape
-df.head(50)
-
+# Create logger for file
 
 logger = logging.getLogger(__name__)
 logger.info("Starting Lineitem Analysis Transformation")
 
+#----------------------------------------#
+# DATA TRANSFORMATION FOR LINEITEM ANALYSIS
+#----------------------------------------#
 
-df['OrderDate'] = pd.to_datetime(df['OrderDate'], errors='coerce').dt.date
-df.head(50)
-
-
-# patterns
-patterns = lineitem_patterns_config()
-patterns.size_pattern
-patterns.color_pattern
-patterns.greek_name_pattern
-patterns.greek_garment_patterns
-patterns.square_patterns
-
-def lineitem_analysis_transform(df: pd.DataFrame) -> pd.DataFrame:
-
-    #format data column 
-    df['OrderDate'] = pd.to_datetime(df['OrderDate'], errors='coerce').dt.date
+def transform_lineitem_analysis(df: pd.DataFrame) -> pd.DataFrame:
+    logger.info("Transforming data for Lineitem Analysis")
     
+    # Normalize OrderDate to datetime while keeping failures as NaT for investigation.
 
+    df['OrderDate'] = df['OrderDate'].astype(str).str.slice(0, 10).apply(pd.to_datetime, format='%Y-%m-%d', errors='coerce')
+    logger.info("OrderDate column transformed")
+    logger.info("Converted OrderDate column to datetime with %s null values", df['OrderDate'].isna().sum())
+
+
+    df.fillna(
+        {
+            'ShippingLocation': 'InPerson',
+        },
+        inplace=True
+    )
+    logger.info("Filled missing ShippingLocation values with 'InPerson'")
     
+    
+    # Compile regex patterns used to extract attributes from ItemName.
+    patterns = lineitem_patterns_config()
+    logger.info("Loaded regex patterns from config")
+
+    # Extract attributes using regex patterns.
+    
+    size = df['ItemName'].str.extract(patterns.size_pattern, expand=False)
+    color = df['ItemName'].str.extract(patterns.color_pattern, expand=False)
+    organization = df['ItemName'].str.extract(patterns.organization_pattern, expand=False)
+    garment_type = df['ItemName'].str.extract(patterns.garment_patterns, expand=False)
+    
+    logger.info("Extracted attributes using regex patterns")
+    
+    # Create new columns for Size, Color, Organization Name, and Garment Type.
+
+    df['Size'] = size.str.upper() 
+    df['Color'] = color
+    df['Organization Name'] = organization
+    df['Garment Type'] = garment_type
+
+    logger.info(
+    "Extracted attributes and Created new columns - missing counts Size:%s Color:%s Org:%s Garment:%s",
+    df['Size'].isna().sum(),
+    df['Color'].isna().sum(),
+    df['organization Name'].isna().sum(),
+    df['Garment Type'].isna().sum()
+    )
+
+
+    # Compute simple monetary metrics for exploratory plots.
+
+    df['money_value'] = df['ItemQuantity'] * df['ItemPrice']
+    df['Rolling Total'] = df['money_value'].cumsum()
+    
+    logger.info("Added columns for monetary calculations")
+
+    return df
+
+
+
+
+
+
+
+
