@@ -31,67 +31,6 @@ def process_query(function, query_file: Path, table_name: str, engine, conn) -> 
     create_sqlite_table_if_replace(transformed_df, table_name=table_name, conn=conn)
     # create_mysql_table_if_replace(transformed_df, table_name=table_name, engine=engine)
 
-#----------------------------------------#
-# CHEKCS
-#----------------------------------------#
-
-def raw_checks() -> None:
-    logger.info("Performing RAW data checks")
-        # Load configurations
-    square_paths_cfg, shopify_paths_cfg, query_paths_cfg = path_config()
-    Mysql_cfg, Sqlite_cfg = db_config()
-    square_pipeline_cfg, shopify_pipeline_cfg, lineitem_pipeline_cfg = pipeline_config()
-
-    # Load database engine
-
-    engine = create_mysql_engine(Mysql_cfg)
-    
-    # SQLite connection
-
-    conn = sqlite_connection(Sqlite_cfg.database_path)
-    
-    # Process Square CSV files
-    
-    square_csv_files = get_csv_files(Path(square_paths_cfg.input_dir), square_pipeline_cfg.csv_pattern)
-    if not square_csv_files:
-        logger.warning(f"No Square CSV files found in {square_paths_cfg.input_dir}")
-        return
-    logger.info(f"[Starting] ETL for {len(square_csv_files)} Square file(s) into '{square_pipeline_cfg.table_name}'")
-    process_file(square_csv_files, table_name=square_pipeline_cfg.table_name, engine=engine, source_name='Square', conn=conn)
-        
-        
-    # Process Shopify CSV files
-    shopify_csv_files = get_csv_files(Path(shopify_paths_cfg.input_dir), shopify_pipeline_cfg.csv_pattern)
-    if not shopify_csv_files:
-        logger.warning(f"No Shopify CSV files found in {shopify_paths_cfg.input_dir}")
-        return
-    logger.info(f"[Starting] ETL for {len(shopify_csv_files)} Shopify file(s) into '{shopify_pipeline_cfg.table_name}'")
-    process_file(shopify_csv_files, table_name=shopify_pipeline_cfg.table_name, engine=engine, source_name='Shopify', conn=conn)
-
-    logger.info("\x1b[Completed] RAW ETL pipeline\x1b[0m")
-
-#----------------------------------------#
-
-def LA_checks() -> None:
-    
-        # Load configurations
-    square_paths_cfg, shopify_paths_cfg, query_paths_cfg = path_config()
-    Mysql_cfg, Sqlite_cfg = db_config()
-    square_pipeline_cfg, shopify_pipeline_cfg, lineitem_pipeline_cfg = pipeline_config()
-
-    # Load database engine
-
-    engine = create_mysql_engine(Mysql_cfg)
-    
-    # SQLite connection
-
-    conn = sqlite_connection(Sqlite_cfg.database_path)
-    
-    logger.info(f"[Starting] ETL for Lineitem Analysis into '{lineitem_pipeline_cfg.table_name}'")
-
-    process_query(function=transform_lineitem_analysis, query_file=query_paths_cfg.lineitem_analysis, table_name=lineitem_pipeline_cfg.table_name, engine=engine, conn=conn)
-    
-    logger.info("\x1b[Completed] Lineitem Analysis ETL pipeline\x1b[0m")
 
 #----------------------------------------#
 # MAIN PIPELINE FUNCTION
@@ -154,7 +93,7 @@ def run_pipeline() -> None:
     sqlite_close_connection(conn)
 
 if __name__ == "__main__":
-    LA_checks()
+    run_pipeline()
 
 
 
