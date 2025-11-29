@@ -61,7 +61,7 @@ def transform_lineitem_analysis(df: pd.DataFrame) -> pd.DataFrame:
     "Extracted attributes and Created new columns - missing counts Size:%s Color:%s Org:%s Garment:%s",
     df['Size'].isna().sum(),
     df['Color'].isna().sum(),
-    df['organization Name'].isna().sum(),
+    df['Organization Name'].isna().sum(),
     df['Garment Type'].isna().sum()
     )
 

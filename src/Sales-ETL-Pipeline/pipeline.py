@@ -21,7 +21,7 @@ def process_file(csv_path: Path, table_name: str, engine, source_name: str, conn
         logger.error(f"Unknown source name: {source_name}")
         return
     create_sqlite_table_if_replace(df, table_name=table_name, conn=conn)
-    # create_mysql_table_if_replace(df, table_name=table_name, engine=engine)
+    create_mysql_table_if_replace(df, table_name=table_name, engine=engine)
     
 def process_query(function, query_file: Path, table_name: str, engine, conn) -> None:
     df = query_data_from_file(engine, query_file)
@@ -29,7 +29,7 @@ def process_query(function, query_file: Path, table_name: str, engine, conn) -> 
     transformed_df = function(df)
     logger.info(f'Transformed Data for {table_name} using {function.__name__}')
     create_sqlite_table_if_replace(transformed_df, table_name=table_name, conn=conn)
-    # create_mysql_table_if_replace(transformed_df, table_name=table_name, engine=engine)
+    create_mysql_table_if_replace(transformed_df, table_name=table_name, engine=engine)
 
 
 #----------------------------------------#
