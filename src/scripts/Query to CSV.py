@@ -64,15 +64,16 @@ def sql_query(query, connection):
 
 # Query need to get data
 query = '''
-
+select *
+from lineitem_analysis
 '''
 
 
 def export_to_csv(df):
     #                                  Output Path                  Name of output file
-    putput_name = os.path.join(os.getenv('Royalties_report_output'), '_____.csv')
+    output_name = os.path.join(os.getenv('Royalties_report_output'), 'lineitem_analysis_test.csv')
     try:
-        df.to_csv(putput_name, index=False)
+        df.to_csv(output_name, index=False)
         log(f"Data exported to CSV")
     except Exception as e:
         log(f"ERROR: exporting data to CSV: {e}")

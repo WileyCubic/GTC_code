@@ -7,17 +7,11 @@ import xlsxwriter
 from dotenv import load_dotenv
 load_dotenv()
 
+from config import path_config
+
 logger = logging.getLogger(__name__)
 logger.info("Export_to_Excel module loaded.")
 
-#------------------------------#
-# Get the output folder path
-#------------------------------#
-
-def get_output_folder() -> str:
-    output_folder = os.getenv('ETL_to_table_daily_output')
-    logger.debug(f'[Export_to_Excel]: output folder is {output_folder}')
-    return output_folder
 
 #------------------------------#
 # Export pivot tables to single excel workbook
