@@ -1,42 +1,31 @@
-# GTC_Code
+# GTC Code Repository
 
-This repository contains the core scripts, dashboards, and analytics pipelines used by **Game Time Couture** and **GTC Greek**.  
-It serves as the central codebase for managing automated business operations, analytics, and interactive dashboards.
+Central codebase for **Game Time Couture** business operations, analytics, and data processing.
 
----
+## 🏗️ Project Structure
 
-## 📌 Purpose
+- **`Data-Pipelines/`** - ETL pipelines for Square/Shopify sales data processing
+- **`Analysis-Dashboard/`** - Interactive dashboards and business analytics
+- **`shopify-graphql-retrieve-orders/`** - Shopify order data retrieval via GraphQL API (Does not work currently)
+- **`GTC-Formated-Pivot-Tables/`** - Formatted reporting and pivot tables
+- **`scripts/`** - Automation and utility scripts
 
-- **Centralized Hub**
-- **Automation** 
-- **Analytics & Reporting**
-- **Dashboards**
+## 🚀 Key Features
 
----
+- **Data Pipeline**: Pipelines for sales and expense data ETL/ELT
+- **Real-time Analytics**: Sales performance and customer insights  
+- **Automated Reporting**: Scheduled data processing and reports
+- **GraphQL APIs**: Flexible data access and integration
+- **Interactive Dashboards**: Business intelligence and visualization
 
-## 📊 Common Workflows
+## 🛠️ Tech Stack
 
-- **Lightweight ETL**: Load raw data, clean & reformat, then save for analysis or exporting
-- **Analytics**: Perform statistical analysis, financial analysis, and generate reports (In development)
-- **Dashboards**: Build interactive dashboards (In development)
-- **Utilities**: Logging and Purging
+- **Python**: Data processing, ETL pipelines
+- **SQL**: Database operations (MySQL, SQLite)
+- **GraphQL**: API services
+- **Pandas**: Data analysis and transformation
+- **Dash/Plotly**: Interactive dashboards
 
----
-
-## 🛠️ Environment & Config
-
-This repo uses environment variables for sensitive information such as:
-- Database logins
-- File paths
-
-```bash
-Log_file=/path/to/log_file
-Data_input=/path/to/input
-Report_output=/path/to/output
-DB_HOST=host
-DB_USER=user
-DB_PASS=yourpassword
-```
 
 
 ## 📜 License

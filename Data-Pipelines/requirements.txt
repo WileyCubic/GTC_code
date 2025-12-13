@@ -1,0 +1,25 @@
+# Data Pipelines - Production Requirements
+# Install with: pip install -r requirements.txt
+
+# Core Data Processing
+pandas>=1.5.0
+numpy>=1.24.0
+
+# Database Connectivity
+SQLAlchemy>=1.4.0,<2.0.0
+mysql-connector-python>=8.0.0
+PyMySQL>=1.0.0
+sqlite3  # Built into Python
+
+# Environment Configuration
+python-dotenv>=0.19.0
+
+# Logging and Utilities
+logging>=0.4.9.6
+
+# File and Path Handling
+pathlib  # Built into Python 3.4+
+
+# Data Validation and Type Hints
+dataclasses  # Built into Python 3.7+
+

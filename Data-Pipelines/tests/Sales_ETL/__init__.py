@@ -1,0 +1,3 @@
+"""
+Sales ETL tests package
+"""
