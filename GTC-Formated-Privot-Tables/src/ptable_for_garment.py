@@ -19,6 +19,8 @@ def table_for_size_color_counts(input_df) -> pd.DataFrame:
         
         #make map
         df = square_split_color_size(df_copy)
+        
+        df.fillna('',inplace=True)
 
         ptable = df.pivot_table(
             index=['Item Name', 'Size', 'Color'],
