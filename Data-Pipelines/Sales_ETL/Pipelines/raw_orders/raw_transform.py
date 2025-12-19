@@ -1,12 +1,55 @@
 import pandas as pd
 from utils import logger
-from common.utils import format_phone_number
 import logging
 import numpy as np
 import datetime
+from pathlib import Path
+
+
+
+# imports used to test processing functions
+from dotenv import load_dotenv
+import os
+ENV_PATH = Path(__file__).resolve().parents[3] / ".env"
+load_dotenv(ENV_PATH)
+
+
+
+pd.set_option('display.max_columns', None)
+pd.set_option('display.max_rows', None)
+
+square_data = pd.read_csv(os.getenv('square_raw_data'))
+shopify_data = pd.read_csv(os.getenv('shopify_raw_data'))
 
 logger = logging.getLogger(__name__)
 logger.info("Starting ETL pipeline")
+
+
+
+#----------------------------------------#
+# ADDITIONAL UTILS FUNCTIONS
+#----------------------------------------#
+
+def format_phone_number(phone, logger):
+    if pd.isna(phone):
+        return 0
+    phone = str(int(float(phone))) # Convert to string and remove decimal if present
+    try:
+        if len(phone) == 10:
+            return f'({phone[:3]})-{phone[3:6]}-{phone[6:]}'
+        elif len(phone) == 11:
+            return f'{phone[0]}-({phone[1:4]}) {phone[4:7]}-{phone[7:]}'  
+        elif len(phone) == 9:
+            return f'({phone[:2]}) {phone[2:5]}-{phone[5:]}'
+        elif len(phone) == 12:
+            return f'{phone[0:2]}-({phone[2:5]}) {phone[5:8]}-{phone[8:]}'
+        else:
+            return ValueError
+    except Exception as e:
+        logger.error(f"Error formatting phone number {phone}: {e}")
+        return phone
+
+
 
 def transform_square(df):
     # fill na values
@@ -50,6 +93,27 @@ def transform_square(df):
     logger.info('Square data transformation complete')
 
     return df
+
+square_data.head(50)
+square_data.info()
+
+blb = square_data.fillna(0).head()
+blb.stack()
+
+shopify_data.info()
+blb = shopify_data.fillna(0).head()
+blb.stack()
+
+
+
+
+
+
+
+
+
+
+
 
 def transform_shopify(df):
     try: 
