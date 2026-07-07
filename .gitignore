@@ -14,9 +14,6 @@ Database/
 
 .DS_store
 
-
-gtc-graphql-api/
-
-check_endpointANDtoken.js
+node_modules/
 
 etl_pipeline/
