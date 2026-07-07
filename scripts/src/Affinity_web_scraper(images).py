@@ -1,8 +1,8 @@
 import requests
 from urllib.parse import urlparse
 import os
-from dotenv import load_dotenv
-load_dotenv()
+from logging_utils.env import load_root_env
+load_root_env()
 from time import sleep
 
 IMAGES_URLS_FILE = os.getenv('image_url_file') # List of image URLs to be scraped and downloaded will be in the form of a text file

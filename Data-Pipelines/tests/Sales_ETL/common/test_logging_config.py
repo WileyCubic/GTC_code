@@ -12,10 +12,6 @@ import tempfile
 import shutil
 from unittest.mock import patch, MagicMock
 
-# Add the project root to Python path
-project_root = os.path.join(os.path.dirname(__file__), '..', '..')
-sys.path.insert(0, project_root)
-
 
 class TestLoggingConfiguration(unittest.TestCase):
     """Test logging configuration and setup"""

@@ -1,5 +1,5 @@
-from dotenv import load_dotenv
-load_dotenv()
+from logging_utils.env import load_root_env
+load_root_env()
 import pandas as pd
 
 #----------------------------------------#

@@ -10,10 +10,6 @@ import sys
 from unittest.mock import patch, MagicMock
 import tempfile
 
-# Add the project root to Python path
-project_root = os.path.join(os.path.dirname(__file__), '..', '..')
-sys.path.insert(0, project_root)
-
 
 class TestConfigurationLoading(unittest.TestCase):
     """Test configuration loading and validation"""

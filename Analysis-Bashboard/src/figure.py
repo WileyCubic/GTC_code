@@ -9,17 +9,9 @@ import folium
 
 
 import logging
-from Utils import logger
+from analysis_bashboard.Utils import logger
 logger = logging.getLogger(__name__)
 logger.info("figure module loaded")
-
-# temp section used for testing plots with real data
-import os
-from dotenv import load_dotenv
-load_dotenv()
-
-data = pd.read_csv(os.getenv('lineitem_analysis_test'))
-columns = [i for i in data.columns]
 
 #set df view length for testing
 pd.set_option('display.max_rows', 5000)

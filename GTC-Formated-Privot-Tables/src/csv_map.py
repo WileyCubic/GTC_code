@@ -1,8 +1,8 @@
-from Utils import logger
+from gtc_pivot_tables.Utils import logger
 import logging
 import pandas as pd
 import re
-from config import pattern_config
+from gtc_pivot_tables.config import pattern_config
 
 logger = logging.getLogger(__name__)
 logger.info("CSV_map module loaded.")

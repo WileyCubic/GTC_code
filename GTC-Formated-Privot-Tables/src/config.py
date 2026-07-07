@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 import os
-from dotenv import load_dotenv
-load_dotenv()
+from logging_utils.env import load_root_env
+load_root_env()
 from pathlib import Path
 import json
 import re

@@ -3,9 +3,9 @@ import sqlite3
 import mysql.connector as mysql
 import pandas as pd
 from sqlalchemy import create_engine
-from dotenv import load_dotenv
+from logging_utils.env import load_root_env
 import numpy as np
-load_dotenv()
+load_root_env()
 from datetime import datetime
 import seaborn as sns
 import matplotlib.pyplot as plt

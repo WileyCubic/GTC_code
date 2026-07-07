@@ -14,11 +14,6 @@ from unittest.mock import patch, MagicMock, mock_open, Mock
 import tempfile
 import logging
 
-# Add the project root to Python path
-project_root = os.path.join(os.path.dirname(__file__), '..', '..', '..')
-sys.path.insert(0, project_root)
-
-# Try to import the module under test - gracefully handle failures
 format_phone_number = None
 log_dataframe_info = None
 log_performance_metric = None
@@ -27,19 +22,12 @@ setup_application_logging = None
 switch_application_logging = None
 
 try:
-    # Try different import paths
-    try:
-        from Sales_ETL.common.utils import (
-            format_phone_number, log_dataframe_info, log_performance_metric,
-            log_error_with_context, setup_application_logging, switch_application_logging
-        )
-    except ImportError:
-        # Alternative import path
-        sys.path.append(os.path.join(project_root, 'Sales_ETL'))
-        # from common.utils import format_phone_number
+    from Sales_ETL.common.utils import (
+        format_phone_number, log_dataframe_info, log_performance_metric,
+        log_error_with_context, setup_application_logging, switch_application_logging
+    )
 except ImportError as e:
     print(f"Warning: Could not import utils module: {e}")
-    pass
 
 
 class TestBasicFunctionality(unittest.TestCase):

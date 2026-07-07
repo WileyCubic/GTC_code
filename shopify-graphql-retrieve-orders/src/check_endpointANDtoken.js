@@ -1,10 +1,10 @@
 // retrieve_order.js
-require('dotenv').config();
+require('../../load-root-env.cjs');
 const Shopify = require('shopify-api-node');
 
 // ---- Validate envs early
-const SHOP = process.env.shopify_shop;                 // e.g., "gtcgreek.myshopify.com"
-const TOKEN = process.env.Shopify_access_token;         // must be the Admin API token (shpat_…)
+const SHOP = process.env.SHOPIFY_SHOP;                 // e.g., "gtcgreek.myshopify.com"
+const TOKEN = process.env.SHOPIFY_ADMIN_ACCESS_TOKEN;   // must be the Admin API token (shpat_…)
 const VERSION = process.env.SHOPIFY_API_VERSION || '2025-10';
 
 function die(msg, example) {
@@ -17,9 +17,9 @@ function die(msg, example) {
 // if (!/\.myshopify\.com$/i.test(SHOP)) {
 //   die('SHOPIFY_SHOP must be the full myshopify domain', 'SHOPIFY_SHOP=gtcgreek.myshopify.com');
 // }
-if (!TOKEN)  die('Missing SHOPIFY_ADMIN_TOKEN in .env', 'SHOPIFY_ADMIN_TOKEN=shpat_...');
+if (!TOKEN)  die('Missing SHOPIFY_ADMIN_ACCESS_TOKEN in .env', 'SHOPIFY_ADMIN_ACCESS_TOKEN=shpat_...');
 if (!/^shpat_/i.test(TOKEN)) {
-  console.warn('⚠️  SHOPIFY_ADMIN_TOKEN does not start with shpat_. Make sure this is the Admin API access token (Reveal token once), not API key/secret.');
+  console.warn('⚠️  SHOPIFY_ADMIN_ACCESS_TOKEN does not start with shpat_. Make sure this is the Admin API access token (Reveal token once), not API key/secret.');
 }
 
 // ---- Before using the library, hit the endpoint directly once (to catch 404s quickly)

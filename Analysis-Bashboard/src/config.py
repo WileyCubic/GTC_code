@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from pathlib import Path
 import os
 
-from dotenv import load_dotenv
-load_dotenv()
+from logging_utils.env import load_root_env
+load_root_env()
 
 #----------------------------------------#
 # Classes for path configuration
@@ -11,7 +11,7 @@ load_dotenv()
 
 @dataclass
 class QueryPathsConfig:
-    all: Path = Path(os.getenv('all'))
+    Dashboard_query_all: Path = Path(os.getenv('Dashboard_query_all'))
     aquery1: Path = Path(os.getenv('aquery1'))
     aquery2: Path = Path(os.getenv('aquery2'))
     aquery3: Path = Path(os.getenv('aquery3'))

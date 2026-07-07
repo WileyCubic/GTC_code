@@ -1,7 +1,7 @@
 
 import pandas as pd
 
-from config import royaltyReportPathsConfig
+from royalty_scripts.config import royaltyReportPathsConfig
 #make sure to load environment variables
 
 config = royaltyReportPathsConfig()

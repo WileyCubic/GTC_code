@@ -1,12 +1,12 @@
 from pathlib import Path
 import logging
-from utils import logger
-from common.config import db_config
-from config import path_config, pipeline_config
-from extract import query_data_from_file
-from load import create_mysql_table_if_replace, create_sqlite_table_if_replace
-from lineitem_analysis_transform import transform_lineitem_analysis
-from sql.functions.connections import create_mysql_engine, sqlite_connection, sqlite_close_connection, mysql_close_connection
+from Sales_ETL.Pipelines.line_item_analysis.utils import logger
+from Sales_ETL.common.config import db_config
+from Sales_ETL.Pipelines.line_item_analysis.config import path_config, pipeline_config
+from Sales_ETL.Pipelines.line_item_analysis.extract import query_data_from_file
+from Sales_ETL.Pipelines.line_item_analysis.load import create_mysql_table_if_replace, create_sqlite_table_if_replace
+from Sales_ETL.Pipelines.line_item_analysis.lineitem_analysis_transform import transform_lineitem_analysis
+from Sales_ETL.sql.functions.connections import create_mysql_engine, sqlite_connection, sqlite_close_connection, mysql_close_connection
 
 logger = logging.getLogger(__name__)
 logger.info("[Starting] ETL pipeline")

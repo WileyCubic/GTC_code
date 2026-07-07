@@ -1,6 +1,6 @@
 
 import pandas as pd
-from Utils import logger
+from gtc_pivot_tables.Utils import logger
 import logging
 logger = logging.getLogger(__name__)
 

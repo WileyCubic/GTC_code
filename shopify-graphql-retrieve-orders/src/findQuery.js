@@ -1,9 +1,9 @@
-require('dotenv').config()
+require('../../load-root-env.cjs')
 const Shopify = require('shopify-api-node')
 
 const shopify = new Shopify({
-    shopName: process.env.shopify_shop,
-    accessToken: process.env.Shopify_access_token
+    shopName: process.env.SHOPIFY_SHOP,
+    accessToken: process.env.SHOPIFY_ADMIN_ACCESS_TOKEN
 });
 
 const runquery = async () => {

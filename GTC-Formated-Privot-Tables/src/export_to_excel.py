@@ -1,13 +1,13 @@
-from Utils import logger
+from gtc_pivot_tables.Utils import logger
 import logging
 import os
 from datetime import datetime
 import pandas as pd
 import xlsxwriter
-from dotenv import load_dotenv
-load_dotenv()
+from logging_utils.env import load_root_env
+load_root_env()
 
-from config import path_config
+from gtc_pivot_tables.config import path_config
 
 logger = logging.getLogger(__name__)
 logger.info("Export_to_Excel module loaded.")

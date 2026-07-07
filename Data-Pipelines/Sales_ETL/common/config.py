@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from pathlib import Path
 import os
 
-from dotenv import load_dotenv
-load_dotenv()
+from logging_utils.env import load_root_env
+load_root_env()
 
 #----------------------------------------#
 # Classes for database configuration

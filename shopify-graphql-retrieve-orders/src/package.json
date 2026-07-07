@@ -2,7 +2,10 @@
   "name": "shopify-graphql-retrieve-orders",
   "version": "1.0.0",
   "description": "",
-  "main": "retrieve_order.js",
+  "main": "check_endpointANDtoken.js",
+  "engines": {
+    "node": ">=20.10"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

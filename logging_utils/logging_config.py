@@ -2,8 +2,8 @@ import os
 import logging
 import logging.handlers
 from datetime import datetime
-from dotenv import load_dotenv
-load_dotenv()
+from logging_utils.env import load_root_env
+load_root_env()
 
 # Configure logging with better practices
 

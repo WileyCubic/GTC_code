@@ -1,4 +1,4 @@
-from Utils import logger
+from gtc_pivot_tables.Utils import logger
 import logging
 import pandas as pd
 

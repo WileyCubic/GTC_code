@@ -1,11 +1,11 @@
-from ETL_from_csv import get_input_csv_files, csv_to_dataframe, clean_input_data
-from csv_map import square_split_color_size
+from gtc_pivot_tables.ETL_from_csv import get_input_csv_files, csv_to_dataframe, clean_input_data
+from gtc_pivot_tables.csv_map import square_split_color_size
 
 
-from config import path_config
+from gtc_pivot_tables.config import path_config
 
 
-from logging_config import logger
+from gtc_pivot_tables.logging_config import logger
 import logging
 logger.info("[Test]: test script started")
 

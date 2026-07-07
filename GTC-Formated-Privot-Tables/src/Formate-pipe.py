@@ -1,13 +1,13 @@
-from Utils import logger
+from gtc_pivot_tables.Utils import logger
 import logging
 
-from config import path_config
+from gtc_pivot_tables.config import path_config
 
-from ETL_from_csv import get_input_csv_files, csv_to_dataframe, clean_input_data
-# from ETL_from_query import query_df, clean_query_data
+from gtc_pivot_tables.ETL_from_csv import get_input_csv_files, csv_to_dataframe, clean_input_data
+# from gtc_pivot_tables.ETL_from_query import query_df, clean_query_data
 
-from ptable_for_garment import table_for_size_color_counts
-from ptable_by_item import create_pivot_table_by_item
+from gtc_pivot_tables.ptable_for_garment import table_for_size_color_counts
+from gtc_pivot_tables.ptable_by_item import create_pivot_table_by_item
 from ptable_by_customer import create_pivot_table_by_name
 from ptable_grand_sub_totals import add_totals_to_by_item, add_totals_to_by_name
 

@@ -13,10 +13,6 @@ import shutil
 from unittest.mock import patch, MagicMock, mock_open
 from pathlib import Path
 
-# Add the project root to Python path
-project_root = os.path.join(os.path.dirname(__file__), '..', '..', '..')
-sys.path.insert(0, project_root)
-
 
 class TestRawOrdersExtract(unittest.TestCase):
     """Test raw orders extraction functionality"""

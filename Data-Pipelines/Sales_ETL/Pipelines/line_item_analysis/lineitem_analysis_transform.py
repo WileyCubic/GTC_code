@@ -1,12 +1,12 @@
 import pandas as pd
 import numpy as np
-from utils import logger
+from Sales_ETL.Pipelines.line_item_analysis.utils import logger
 import logging
-from dotenv import load_dotenv
-load_dotenv()
+from logging_utils.env import load_root_env
+load_root_env()
 from datetime import datetime
 
-from config import lineitem_patterns_config
+from Sales_ETL.Pipelines.line_item_analysis.config import lineitem_patterns_config
 
 
 # Create logger for file

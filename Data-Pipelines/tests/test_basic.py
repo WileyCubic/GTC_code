@@ -3,12 +3,6 @@ Simple test to verify test discovery and execution
 """
 
 import unittest
-import sys
-import os
-
-# Add project root to Python path for imports
-project_root = os.path.join(os.path.dirname(__file__), '..', '..')
-sys.path.insert(0, project_root)
 
 
 class TestBasic(unittest.TestCase):

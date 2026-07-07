@@ -1,9 +1,8 @@
 import os
 import logging
 from datetime import datetime
-import sys
-from dotenv import load_dotenv
-load_dotenv()
+from logging_utils.env import load_root_env
+load_root_env()
 import pandas as pd
 from Sales_ETL.common.config import logging_file_config
 from Sales_ETL.common.logging_config import setup_logging

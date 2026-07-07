@@ -1,0 +1,68 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gtc-code"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "pandas>=1.5.0",
+    "numpy>=1.24.0",
+    "SQLAlchemy>=1.4.0",
+    "mysql-connector-python>=8.0.0",
+    "PyMySQL>=1.0.0",
+    "python-dotenv>=0.19.0",
+    "pgeocode>=0.4.0",
+    "dash",
+    "dash_bootstrap_components",
+    "requests",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-cov",
+    "pytest-mock",
+    "Faker",
+    "coverage",
+    "responses",
+    "factory-boy",
+    "pytest-benchmark",
+    "nose2",
+    "pytest-postgresql",
+    "sqlalchemy-utils",
+    "pytest-tmp-files",
+    "parameterized",
+    "pytest-html",
+    "pytest-json-report",
+    "pytest-xdist",
+    "pytest-sugar",
+    "pytest-env",
+    "unittest2",
+]
+
+[tool.setuptools]
+packages = [
+    "logging_utils",
+    "Sales_ETL",
+    "Sales_ETL.common",
+    "Sales_ETL.Pipelines",
+    "Sales_ETL.Pipelines.raw_orders",
+    "Sales_ETL.Pipelines.line_item_analysis",
+    "Sales_ETL.sql",
+    "Sales_ETL.sql.functions",
+    "analysis_bashboard",
+    "gtc_pivot_tables",
+    "royalty_scripts",
+]
+
+[tool.setuptools.package-dir]
+"logging_utils" = "logging_utils"
+"Sales_ETL" = "Data-Pipelines/Sales_ETL"
+"analysis_bashboard" = "Analysis-Bashboard/src"
+"gtc_pivot_tables" = "GTC-Formated-Privot-Tables/src"
+"royalty_scripts" = "scripts/src"
+
+[tool.pytest.ini_options]
+testpaths = ["Data-Pipelines/tests"]

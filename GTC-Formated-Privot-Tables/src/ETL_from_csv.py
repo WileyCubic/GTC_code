@@ -1,12 +1,12 @@
-from Utils import logger
+from gtc_pivot_tables.Utils import logger
 import logging
 import pandas as pd
 import os
 import glob
 import numpy as np
 import re
-from dotenv import load_dotenv
-load_dotenv()
+from logging_utils.env import load_root_env
+load_root_env()
 
 logger = logging.getLogger(__name__)
 logger.info("ETL_for_CSV_data module loaded.")

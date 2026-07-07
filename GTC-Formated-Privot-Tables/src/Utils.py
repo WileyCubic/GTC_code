@@ -1,13 +1,12 @@
 import os
 from datetime import datetime
-from dotenv import load_dotenv
-load_dotenv()
-import sys
+from logging_utils.env import load_root_env
+load_root_env()
 import logging
 
-from config import LoggingFileConfig
+from gtc_pivot_tables.config import LoggingFileConfig
 
-from logging_config import setup_logging
+from gtc_pivot_tables.logging_config import setup_logging
 
 logging_config = LoggingFileConfig()
 

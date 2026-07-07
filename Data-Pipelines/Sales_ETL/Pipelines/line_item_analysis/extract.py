@@ -1,5 +1,5 @@
 from pathlib import Path
-from utils import logger
+from Sales_ETL.Pipelines.line_item_analysis.utils import logger
 import pandas as pd
 import logging
 

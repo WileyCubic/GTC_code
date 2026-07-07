@@ -1,18 +1,12 @@
 from pathlib import Path
-import logging import sys
+import logging
 
-# Add the Data-Pipelines directory to Python path to resolve Sales_ETL imports
-data_pipelines_root = Path(__file__).parents[3]
-if str(data_pipelines_root) not in sys.path:
-    sys.path.insert(0, str(data_pipelines_root))
-
-# from utils import setup_logging
 from Sales_ETL.common.logging_config import setup_logging
 from Sales_ETL.common.config import db_config, logging_file_config
-from config import path_config, pipeline_config
-from extract import get_csv_files, csv_to_dataframe
-from raw_transform import transform_square, transform_shopify
-from load import create_mysql_table_if_replace, create_sqlite_table_if_replace
+from Sales_ETL.Pipelines.raw_orders.config import path_config, pipeline_config
+from Sales_ETL.Pipelines.raw_orders.extract import get_csv_files, csv_to_dataframe
+from Sales_ETL.Pipelines.raw_orders.raw_transform import transform_square, transform_shopify
+from Sales_ETL.Pipelines.raw_orders.load import create_mysql_table_if_replace, create_sqlite_table_if_replace
 from Sales_ETL.sql.functions.connections import (
     create_mysql_engine,
     sqlite_connection,
@@ -20,12 +14,13 @@ from Sales_ETL.sql.functions.connections import (
     sqlite_close_connection,
 )
 
-logger = setup_logging(
+setup_logging(
     primary_log_file_path = logging_file_config().raw_orders_log,
     secondary_log_file_path= logging_file_config().Master_sales_ETL,
     project_name= 'RawOrdersPipeline',
     force_setup=True
 )
+logger = logging.getLogger(__name__)
 
 logger.info(r"""
  ____  _____  _    ____ _____    ____ ___ ____  _____ _     ___ _   _ _____ 

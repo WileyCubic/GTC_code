@@ -6,22 +6,6 @@ import datetime
 from pathlib import Path
 import pgeocode
 
-
-
-# # imports used to test processing functions
-# from dotenv import load_dotenv
-# import os
-# ENV_PATH = Path(__file__).resolve().parents[3] / ".env"
-# load_dotenv(ENV_PATH)
-
-
-
-# pd.set_option('display.max_columns', None)
-# pd.set_option('display.max_rows', None)
-
-# square_data = pd.read_csv(os.getenv('square_raw_data'))
-# shopify_data = pd.read_csv(os.getenv('shopify_raw_data'))
-
 logger = logging.getLogger(__name__)
 logger.info("Transform Module Loaded")
 

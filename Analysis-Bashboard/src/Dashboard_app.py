@@ -2,7 +2,7 @@ import dash
 from dash import dcc, html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
-from Utils import logger
+from analysis_bashboard.Utils import logger
 import logging
 
 logger = logging.getLogger(__name__)

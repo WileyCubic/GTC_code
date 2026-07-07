@@ -1,6 +1,6 @@
 import logging
-from Utils import logger
-from csv_map import square_split_color_size, shopify_split_color_size
+from gtc_pivot_tables.Utils import logger
+from gtc_pivot_tables.csv_map import square_split_color_size, shopify_split_color_size
 import pandas as pd
 
 logger = logging.getLogger(__name__)

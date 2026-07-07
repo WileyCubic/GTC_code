@@ -1,6 +1,6 @@
 import logging
-from Utils import logger
-from config import MysqlDatabaseConfig
+from analysis_bashboard.Utils import logger
+from analysis_bashboard.config import MysqlDatabaseConfig
 import pandas as pd
 from sqlalchemy.engine import Engine
 from sqlalchemy import create_engine

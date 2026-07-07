@@ -5,10 +5,20 @@ Central codebase for **Game Time Couture** business operations, analytics, and d
 ## 🏗️ Project Structure
 
 - **`Data-Pipelines/`** - ETL pipelines for Square/Shopify sales data processing
-- **`Analysis-Dashboard/`** - Interactive dashboards and business analytics
+- **`Analysis-Bashboard/`** - Interactive dashboards and business analytics
+- **`gtc-graphql-api/`** - Embedded Shopify app (React Router + Prisma)
 - **`shopify-graphql-retrieve-orders/`** - Shopify order data retrieval via GraphQL API (Does not work currently)
-- **`GTC-Formated-Pivot-Tables/`** - Formatted reporting and pivot tables
+- **`GTC-Formated-Privot-Tables/`** - Formatted reporting and pivot tables
 - **`scripts/`** - Automation and utility scripts
+
+## ⚙️ Setup
+
+All projects in this repo share a single root `.env` file.
+
+1. Copy the template: `cp .env.example .env`
+2. Fill in real values in `.env` (never commit this file).
+3. Install Python dependencies (editable install, covers every Python project): `pip install -e .` (add `[test]` for the test suite: `pip install -e ".[test]"`)
+4. For the Node projects, install dependencies per-project (`cd gtc-graphql-api/src && npm install`, `cd shopify-graphql-retrieve-orders/src && npm install`) — they read from the same root `.env` automatically.
 
 ## 🚀 Key Features
 

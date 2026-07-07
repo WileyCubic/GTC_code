@@ -2,8 +2,8 @@ import os
 import logging
 import logging.handlers
 from datetime import datetime
-from dotenv import load_dotenv
-load_dotenv()
+from logging_utils.env import load_root_env
+load_root_env()
 
 # Configure logging with better practices
 
@@ -20,10 +20,6 @@ def setup_logging(log_file_path=None, project_name=None, force_setup=False):
     root_logger = logging.getLogger()
     if root_logger.handlers and not force_setup:
         return  # Already configured, don't setup again
-    
-    # Determine log file path
-    if not log_file_path:
-        log_file_path = os.getenv('Backup_log')
     
     # Clear existing handlers if force_setup
     if force_setup:

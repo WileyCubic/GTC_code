@@ -1,13 +1,13 @@
 import pandas as pd
 import numpy as np
-import sqlite3 
+import sqlite3
 from datetime import datetime
 import mysql.connector as mysql
 from sqlalchemy import create_engine
-import glob 
+import glob
 import os
-from dotenv import load_dotenv
-load_dotenv()
+from logging_utils.env import load_root_env
+load_root_env()
 
 # set pandas display for building and testing purposes
 pd.set_option('display.max_rows', None)

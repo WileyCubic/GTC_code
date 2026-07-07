@@ -4,8 +4,8 @@ from pathlib import Path
 import re
 import os
 
-from dotenv import load_dotenv
-load_dotenv()
+from logging_utils.env import load_root_env
+load_root_env()
 
 #----------------------------------------#
 # Classes for path configuration

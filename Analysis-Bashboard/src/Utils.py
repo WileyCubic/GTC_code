@@ -1,18 +1,14 @@
 import os
 import logging
 from datetime import datetime
-import sys
-from dotenv import load_dotenv
-load_dotenv()
+from logging_utils.env import load_root_env
+load_root_env()
 import pandas as pd
 
 
 #----------------------------------------#
 # LOGGING CONFIGURATION
 #----------------------------------------#
-
-# help to find logging_utils module
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from logging_utils.logging_config import setup_logging
 
