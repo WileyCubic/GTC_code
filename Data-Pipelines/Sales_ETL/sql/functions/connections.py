@@ -1,6 +1,5 @@
 import logging
-from common.utils import logger
-from common.config import MysqlDatabaseConfig
+from Sales_ETL.common.config import MysqlDatabaseConfig
 from sqlalchemy.engine import Engine
 from sqlalchemy import create_engine
 import sqlite3

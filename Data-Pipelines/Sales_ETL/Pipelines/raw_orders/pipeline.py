@@ -1,15 +1,39 @@
 from pathlib import Path
-import logging
-from utils import logger
-from common.config import db_config
+import logging import sys
+
+# Add the Data-Pipelines directory to Python path to resolve Sales_ETL imports
+data_pipelines_root = Path(__file__).parents[3]
+if str(data_pipelines_root) not in sys.path:
+    sys.path.insert(0, str(data_pipelines_root))
+
+# from utils import setup_logging
+from Sales_ETL.common.logging_config import setup_logging
+from Sales_ETL.common.config import db_config, logging_file_config
 from config import path_config, pipeline_config
 from extract import get_csv_files, csv_to_dataframe
 from raw_transform import transform_square, transform_shopify
 from load import create_mysql_table_if_replace, create_sqlite_table_if_replace
-from sql.functions.connections import create_mysql_engine, sqlite_connection, mysql_close_connection, sqlite_close_connection
+from Sales_ETL.sql.functions.connections import (
+    create_mysql_engine,
+    sqlite_connection,
+    mysql_close_connection,
+    sqlite_close_connection,
+)
 
-logger = logging.getLogger(__name__)
-logger.info("[Starting] ETL pipeline")
+logger = setup_logging(
+    primary_log_file_path = logging_file_config().raw_orders_log,
+    secondary_log_file_path= logging_file_config().Master_sales_ETL,
+    project_name= 'RawOrdersPipeline',
+    force_setup=True
+)
+
+logger.info(r"""
+ ____  _____  _    ____ _____    ____ ___ ____  _____ _     ___ _   _ _____ 
+/ ___||_   _|/ \  |  _ \_   _|  |  _ \_ _|  _ \| ____| |   |_ _| \ | | ____|
+\___ \  | | / _ \ | |_) || |    | |_) | || |_) |  _| | |    | ||  \| |  _|  
+ ___) | | |/ ___ \|  _ < | |    |  __/| ||  __/| |___| |___ | || |\  | |___ 
+|____/  |_/_/   \_\_| \_\|_|    |_|  |___|_|   |_____|_____|___|_| \_|_____|
+            """)
 
 
 def process_file(csv_path: Path, table_name: str, engine, source_name: str, conn) -> None:
@@ -19,7 +43,7 @@ def process_file(csv_path: Path, table_name: str, engine, source_name: str, conn
     elif source_name == 'Shopify':
         df = transform_shopify(df)
     else:
-        logger.error(f"Unknown source name: {source_name}")
+        print(f"Unknown source name: {source_name}")
         return
     create_sqlite_table_if_replace(df, table_name=table_name, conn=conn)
     create_mysql_table_if_replace(df, table_name=table_name, engine=engine)
@@ -47,21 +71,21 @@ def run_pipeline() -> None:
     
     square_csv_files = get_csv_files(Path(square_paths_cfg.input_dir), square_pipeline_cfg.csv_pattern)
     if not square_csv_files:
-        logger.warning(f"No Square CSV files found in {square_paths_cfg.input_dir}")
+        print(f"No Square CSV files found in {square_paths_cfg.input_dir}")
         return
-    logger.info(f"[Starting] ETL for {len(square_csv_files)} Square file(s) into '{square_pipeline_cfg.table_name}'")
+    print(f"[Starting] ETL for {len(square_csv_files)} Square file(s) into '{square_pipeline_cfg.table_name}'")
     process_file(square_csv_files, table_name=square_pipeline_cfg.table_name, engine=engine, source_name='Square', conn=conn)
         
         
     # Process Shopify CSV files
     shopify_csv_files = get_csv_files(Path(shopify_paths_cfg.input_dir), shopify_pipeline_cfg.csv_pattern)
     if not shopify_csv_files:
-        logger.warning(f"No Shopify CSV files found in {shopify_paths_cfg.input_dir}")
+        print(f"No Shopify CSV files found in {shopify_paths_cfg.input_dir}")
         return
-    logger.info(f"[Starting] ETL for {len(shopify_csv_files)} Shopify file(s) into '{shopify_pipeline_cfg.table_name}'")
+    print(f"[Starting] ETL for {len(shopify_csv_files)} Shopify file(s) into '{shopify_pipeline_cfg.table_name}'")
     process_file(shopify_csv_files, table_name=shopify_pipeline_cfg.table_name, engine=engine, source_name='Shopify', conn=conn)
 
-    logger.info("[Completed] RAW ETL pipeline")
+    print("[Completed] RAW ETL pipeline")
     
 
     # Close database connection

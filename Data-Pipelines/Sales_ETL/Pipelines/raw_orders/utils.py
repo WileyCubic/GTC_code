@@ -5,8 +5,8 @@ import sys
 from dotenv import load_dotenv
 load_dotenv()
 import pandas as pd
-from common.config import logging_file_config
-from common.logging_config import setup_logging
+from Sales_ETL.common.config import logging_file_config
+from Sales_ETL.common.logging_config import setup_logging
 
 
 #----------------------------------------#

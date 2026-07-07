@@ -1,11 +1,11 @@
 from pathlib import Path
-from utils import logger
+from .utils import logger
 import pandas as pd
 import logging
 
 
 logger = logging.getLogger(__name__)
-logger.info("Starting ETL pipeline")
+logger.info("Extract Module Loaded")
 
 #----------------------------------------#
 # EXTRACTION CSV FUNCTIONS

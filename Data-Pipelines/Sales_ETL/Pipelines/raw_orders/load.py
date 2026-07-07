@@ -1,8 +1,9 @@
-from common.utils import logger
+from .utils import logger
 import logging
 import pandas as pd
 
 logger = logging.getLogger(__name__)
+logger.info("Load Module Loaded")
 
 
 #----------------------------------------#

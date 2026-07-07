@@ -23,3 +23,6 @@ pathlib  # Built into Python 3.4+
 # Data Validation and Type Hints
 dataclasses  # Built into Python 3.7+
 
+# Zip Code Lookup
+pgeocode>=1.0.0
+

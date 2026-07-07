@@ -1,28 +1,29 @@
 import pandas as pd
-from utils import logger
+from .utils import logger
 import logging
 import numpy as np
 import datetime
 from pathlib import Path
+import pgeocode
 
 
 
-# imports used to test processing functions
-from dotenv import load_dotenv
-import os
-ENV_PATH = Path(__file__).resolve().parents[3] / ".env"
-load_dotenv(ENV_PATH)
+# # imports used to test processing functions
+# from dotenv import load_dotenv
+# import os
+# ENV_PATH = Path(__file__).resolve().parents[3] / ".env"
+# load_dotenv(ENV_PATH)
 
 
 
-pd.set_option('display.max_columns', None)
-pd.set_option('display.max_rows', None)
+# pd.set_option('display.max_columns', None)
+# pd.set_option('display.max_rows', None)
 
-square_data = pd.read_csv(os.getenv('square_raw_data'))
-shopify_data = pd.read_csv(os.getenv('shopify_raw_data'))
+# square_data = pd.read_csv(os.getenv('square_raw_data'))
+# shopify_data = pd.read_csv(os.getenv('shopify_raw_data'))
 
 logger = logging.getLogger(__name__)
-logger.info("Starting ETL pipeline")
+logger.info("Transform Module Loaded")
 
 
 
@@ -30,7 +31,23 @@ logger.info("Starting ETL pipeline")
 # ADDITIONAL UTILS FUNCTIONS
 #----------------------------------------#
 
-def format_phone_number(phone, logger):
+def add_state_from_zip(df, zip_col):
+    nomi = pgeocode.Nominatim('us')
+
+    def lookup_state(zip_code):
+        try:
+            result = nomi.query_postal_code(str(zip_code).split('-')[0].zfill(5))
+            return result['state_code'] if pd.notna(result['state_code']) else None
+        except Exception as e:
+            logger.error(f"Error looking up zip {zip_code}: {e}")
+            return None
+
+    df['State'] = df[zip_col].apply(lookup_state)
+    logger.info(f"State column added from '{zip_col}'")
+    return df
+
+
+def format_phone_number(phone):
     if pd.isna(phone):
         return 0
     phone = str(int(float(phone))) # Convert to string and remove decimal if present
@@ -93,26 +110,6 @@ def transform_square(df):
     logger.info('Square data transformation complete')
 
     return df
-
-square_data.head(50)
-square_data.info()
-
-blb = square_data.fillna(0).head()
-blb.stack()
-
-shopify_data.info()
-blb = shopify_data.fillna(0).head()
-blb.stack()
-
-
-
-
-
-
-
-
-
-
 
 
 def transform_shopify(df):
