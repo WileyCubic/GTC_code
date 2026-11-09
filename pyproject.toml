@@ -4,65 +4,69 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gtc-code"
-version = "0.1.0"
+version = "0.2.0"
+description = "Game Time Couture data pipelines, reports and tools"
 requires-python = ">=3.11"
 dependencies = [
-    "pandas>=1.5.0",
-    "numpy>=1.24.0",
-    "SQLAlchemy>=1.4.0",
-    "mysql-connector-python>=8.0.0",
-    "PyMySQL>=1.0.0",
-    "python-dotenv>=0.19.0",
-    "pgeocode>=0.4.0",
-    "dash",
-    "dash_bootstrap_components",
-    "requests",
+    "pandas>=2.2",
+    "numpy>=1.26",
+    "SQLAlchemy>=2.0",
+    "psycopg[binary]>=3.2",
+    "python-dotenv>=1.0",
+    "XlsxWriter>=3.1",
+    "requests>=2.31",
+    "pgeocode>=0.4",
+    "dash>=2.17",
+    "dash-bootstrap-components>=1.6",
+    "plotly>=5.20",
 ]
 
 [project.optional-dependencies]
-test = [
-    "pytest",
-    "pytest-cov",
-    "pytest-mock",
-    "Faker",
-    "coverage",
-    "responses",
-    "factory-boy",
-    "pytest-benchmark",
-    "nose2",
-    "pytest-postgresql",
-    "sqlalchemy-utils",
-    "pytest-tmp-files",
-    "parameterized",
-    "pytest-html",
-    "pytest-json-report",
-    "pytest-xdist",
-    "pytest-sugar",
-    "pytest-env",
-    "unittest2",
-]
+test = ["pytest>=8"]
+# Only needed by the scratch analysis notebook in Analysis-Bashboard/notebooks
+analysis = ["matplotlib", "seaborn"]
+
+# Command-line entry points (available after `pip install -e .`)
+[project.scripts]
+gtc-db-migrate = "gtc_common.migrate:main"
+gtc-db-seed = "gtc_common.seed:main"
+gtc-sales-etl = "Sales_ETL.run:main"
+gtc-expenses-etl = "expenses_etl.pipeline:main"
+gtc-pivot-tables = "gtc_pivot_tables.pipeline:main"
+gtc-royalties-csv = "gtc_reports.royalties_from_csv:main"
+gtc-royalties-db = "gtc_reports.royalties_from_db:main"
+gtc-tax-report = "gtc_reports.yearly_tax_report:main"
+gtc-upi-names = "gtc_reports.upi_to_names:main"
+gtc-affinity-images = "gtc_reports.affinity_image_scraper:main"
+gtc-dashboard = "analysis_bashboard.app:main"
 
 [tool.setuptools]
 packages = [
-    "logging_utils",
+    "gtc_common",
     "Sales_ETL",
-    "Sales_ETL.common",
     "Sales_ETL.Pipelines",
     "Sales_ETL.Pipelines.raw_orders",
     "Sales_ETL.Pipelines.line_item_analysis",
-    "Sales_ETL.sql",
-    "Sales_ETL.sql.functions",
+    "expenses_etl",
     "analysis_bashboard",
     "gtc_pivot_tables",
-    "royalty_scripts",
+    "gtc_reports",
 ]
 
 [tool.setuptools.package-dir]
-"logging_utils" = "logging_utils"
+"gtc_common" = "gtc_common"
 "Sales_ETL" = "Data-Pipelines/Sales_ETL"
+"expenses_etl" = "Data-Pipelines/Expences_ETL"
 "analysis_bashboard" = "Analysis-Bashboard/src"
 "gtc_pivot_tables" = "GTC-Formated-Privot-Tables/src"
-"royalty_scripts" = "scripts/src"
+"gtc_reports" = "scripts/src"
+
+[tool.setuptools.package-data]
+"gtc_common" = ["schema/*.sql"]
+"Sales_ETL" = ["assets/*.json", "sql/*.sql"]
+"gtc_pivot_tables" = ["assets/*.json"]
+"analysis_bashboard" = ["assets/*.css", "sql/*.sql"]
+"gtc_reports" = ["sql/*.sql"]
 
 [tool.pytest.ini_options]
-testpaths = ["Data-Pipelines/tests"]
+testpaths = ["tests"]

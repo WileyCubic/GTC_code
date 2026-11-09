@@ -1,20 +1,35 @@
-# Ignore environment variable files and logs
+# Secrets: the real env file and its backups (.env.example IS committed)
 .env
+.env.backup*
+
+# Local data, databases, logs and generated outputs
+data/
+Database/
 *.db
+*.sqlite
 logs/
 *.log
-data/
 scripts output/
+*.xlsx
 TO_DO.txt
 
+# Python
 .venv/
 __pycache__/
-.vscode/
-Database/
 *.egg-info/
+.pytest_cache/
+.benchmarks/
 
-.DS_store
-
+# Node
 node_modules/
+gtc-graphql-api/src/.shopify/
+gtc-graphql-api/src/.react-router/
+gtc-graphql-api/src/build/
+
+# Editors / tools
+.vscode/
+.claude/
+.DS_Store
+.DS_store
 
 etl_pipeline/
