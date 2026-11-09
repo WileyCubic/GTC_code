@@ -1,0 +1,1 @@
+Shopify #1621 anmd #1622 are duplicated invoices and money was only recieve on one of them. When reporting royalties and year end tax revenue, This needed to be kept in mind that one one of them can stay.
