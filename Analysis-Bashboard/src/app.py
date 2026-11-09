@@ -1,9 +1,15 @@
-import dash
-from dash import dcc, html
-import dash_bootstrap_components as dbc
-from dash.dependencies import Input, Output
-from analysis_bashboard.Utils import logger
+"""GTC Analytics Dashboard (layout prototype).   gtc-dashboard  ->  http://127.0.0.1:8050
+
+Status: layout only. The coloured boxes are placeholders; charts from
+figure.py and data from data.py are not wired in yet. See dashboard-brief.md.
+"""
 import logging
+
+import dash
+import dash_bootstrap_components as dbc
+from dash import html
+
+from gtc_common.log import setup_logging
 
 logger = logging.getLogger(__name__)
 
@@ -47,43 +53,11 @@ app.layout = dbc.Container([
     className='dashboard-container')
 
 
+def main() -> None:
+    setup_logging("dashboard")
+    logger.info("Starting dashboard on http://127.0.0.1:8050")
+    app.run(debug=True)
 
 
-
-
-
-# dbc.Container([
-#         html.Div(style={'backgroundColor': "#656666", 'borderRadius': '10px', 'margin': '10px'}, children=[
-#                 html.H1("GTC Analytics Dashboard", 
-#                         style={'textAlign': 'center', 'color': "#CACACA", 'padding': '20px'}),
-#                 html.Hr(style={'borderWidth': "5px", 'borderColor': "#CACACA"},),
-#                 html.H2("Dashboard Content", 
-#                         style={'textAlign': 'center', 'color': "#CACACA", 'padding': '15px'}),
-#                         ], 
-#                  className='header-section',
-#                  style={'flex': '1',
-#                         'width': '25%'
-#                         }
-#                  ),
-#         html.Div(style={'backgroundColor': "#656666", 'borderRadius': '10px', 'margin': '10px'}, children=[
-#                 html.H2("Additional Section", 
-#                         style={'textAlign': 'center', 'color': "#CACACA", 'padding': '15px'}),
-#         ], className='header-section'),
-# ], fluid=True, className='dashboard-container', style={'display': 'flex'})
-
-        # html.H1("GTC Analytics Dashboard", 
-        #         style={'textAlign': 'center', 'color': "#CACACA", 'padding': '20px'},),
-        # html.Hr(style={'borderWidth': "10px", 'borderColor': "#CACACA"},),
-        # html.H2("Dashboard Content", 
-        #         style={'textAlign': 'center', 'color': "#CACACA", 'padding': '15px'}),
-        
-        
-
-# ])
-
-if __name__ == '__main__':
-    try:
-        logger.info("Starting Dashboard Application")
-        app.run(debug=True)
-    except Exception as e:
-        logger.error(f"Error starting Dashboard Application: {e}")
+if __name__ == "__main__":
+    main()

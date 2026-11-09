@@ -1,73 +1,35 @@
-from gtc_pivot_tables.Utils import logger
-import logging
+"""Split size / color / organization out of item names and variations."""
+from __future__ import annotations
+
 import pandas as pd
-import re
-from gtc_pivot_tables.config import pattern_config
 
-logger = logging.getLogger(__name__)
-logger.info("CSV_map module loaded.")
+from gtc_pivot_tables.config import patterns
 
 
-#get patterns from config
-patterns = pattern_config()
-
-
-#-------------------------------#
-# Function to create size and color maps from sales data
-#-------------------------------#
-
-def square_split_color_size(df):
-    
-    Itemname = df['Item Name'].astype(str)
-    
-    variation = df['Item Variation'].astype(str)
-    
-    # come back and look at this section and make sure the patterns are working correctly
-
-    size = variation.str.extract(patterns.size_pattern, expand=False)
-    
-    color = variation.str.replace(patterns.size_pattern, '', regex=True)
-    
-    colorfromname = Itemname.str.extract(patterns.color_pattern, expand=False)
-    
+def square_split_color_size(df: pd.DataFrame) -> pd.DataFrame:
+    """Square: size comes from "Item Variation"; color is what is left of the
+    variation after removing the size, falling back to a color in the item name."""
+    p = patterns()
+    df = df.copy()
+    variation = df["Item Variation"].astype(str)
+    size = variation.str.extract(p.size, expand=False)
     color = (
-        color.str.replace(r'\s*,\s*', ', ', regex=True)
-        .str.strip(' ,')
+        variation.str.replace(p.size, "", regex=True)
+        .str.replace(r"\s*,\s*", ", ", regex=True)
+        .str.strip(" ,")
     )
-    
-    color = color.mask(color.eq(''))
-    
-    df['Color1'] = color
-    df['Color from Name'] = colorfromname
-    
-    df['Color'] = df['Color1'].combine_first(df['Color from Name'])
-    df.drop(columns=['Color1', 'Color from Name'], inplace=True)
-    
-    df['Size'] = size.str.upper()
-    
-    
-    df.drop(columns=['Item Variation'], inplace=True)
-    
-    logger.info("Square color and size mapping completed.")
-    
-    return df
+    color = color.mask(color.eq("") | color.eq("None"))
+    color_from_name = df["Item Name"].astype(str).str.extract(p.color, expand=False)
+    df["Color"] = color.combine_first(color_from_name)
+    df["Size"] = size.str.upper()
+    return df.drop(columns=["Item Variation"])
 
-def shopify_split_color_size(df):
-    
-    lineitemname = df['Lineitem name'].astype(str)
 
-    size = lineitemname.str.extract(patterns.size_pattern, expand=False)
-
-    color = lineitemname.str.extract(patterns.color_pattern, expand=False)
-
-    greek_name = lineitemname.str.extract(patterns.organization_pattern, expand=False)
-
-    df['Greek Name'] = greek_name
-    
-    df['Size'] = size.str.upper()
-    
-    df['Color'] = color
-    
-    logger.info("Shopify color and size mapping completed.")
-    
+def shopify_split_color_size(df: pd.DataFrame) -> pd.DataFrame:
+    p = patterns()
+    df = df.copy()
+    name = df["Lineitem name"].astype(str)
+    df["Greek Name"] = name.str.extract(p.organization, expand=False)
+    df["Size"] = name.str.extract(p.size, expand=False).str.upper()
+    df["Color"] = name.str.extract(p.color, expand=False)
     return df

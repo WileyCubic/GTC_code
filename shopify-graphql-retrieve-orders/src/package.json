@@ -1,13 +1,15 @@
 {
   "name": "shopify-graphql-retrieve-orders",
   "version": "1.0.0",
-  "description": "",
-  "main": "check_endpointANDtoken.js",
+  "description": "Test scripts for the Shopify Admin GraphQL API (static admin token)",
+  "main": "findQuery.js",
   "engines": {
     "node": ">=20.10"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "check": "node check_endpointANDtoken.js",
+    "orders": "node findQuery.js",
+    "shop": "node getShopInfo.js"
   },
   "keywords": [],
   "author": "",

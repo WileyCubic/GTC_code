@@ -1,30 +1,24 @@
+"""Plotly chart builders for the dashboard.
+
+Each function takes a DataFrame (normally ``data.load_lineitem_analysis()``)
+and returns a Plotly figure. Try them out with:
+
+    from analysis_bashboard.data import load_lineitem_analysis
+    from analysis_bashboard import figure
+    figure.create_hbar_chart(load_lineitem_analysis(), "Top orgs", "organization_name", "money_value", 10).show()
+"""
+import logging
+
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 import plotly.express as px
 import plotly.graph_objects as go
-import plotly.io as pio
-import folium
 
-
-import logging
-from analysis_bashboard.Utils import logger
 logger = logging.getLogger(__name__)
-logger.info("figure module loaded")
-
-#set df view length for testing
-pd.set_option('display.max_rows', 5000)
-
-#----------------------------------------#
-# FIGURE CREATION FUNCTIONS
-#----------------------------------------#
 
 
 #----------------------------------------#
 # LINE PLOT FIGURE
 #----------------------------------------#
-
 
 # this is working as intended
 def create_total_profit_over_time(df: pd.DataFrame, title: str) -> go.Figure:
@@ -40,8 +34,8 @@ def create_total_profit_over_time(df: pd.DataFrame, title: str) -> go.Figure:
     plotly figure object
     
     MANDATORY COLUMNS IN DATAFRAME:
-    'OrderDate'
-    'Rolling Total'
+    'order_date'
+    'rolling_total'
     
     additions to make:
     add a section that allows for a slider to change the time frame being viewed.
@@ -53,8 +47,8 @@ def create_total_profit_over_time(df: pd.DataFrame, title: str) -> go.Figure:
     
     fig = px.line(
         df, 
-        x='OrderDate', 
-        y='Rolling Total', 
+        x='order_date', 
+        y='rolling_total', 
         title=title
     )
     fig.update_layout(
@@ -87,12 +81,6 @@ def create_total_profit_over_time(df: pd.DataFrame, title: str) -> go.Figure:
     )
     return fig
 
-create_total_profit_over_time(data, 'Total Profit Over Time')  # temp call for testing purposes
-
-
-
-
-data.head()
 
 #----------------------------------------#
 # HBAR CHART FIGURE
@@ -121,7 +109,7 @@ def create_hbar_chart(df: pd.DataFrame, title: str, groupby: str, count: str, li
     
     main_color = '#00CC96'  # green color for profit line
 
-    df1 = df.groupby(groupby)[count].sum().reset_index().sort_values(by=count, ascending=False).tail(limit)
+    df1 = df.groupby(groupby)[count].sum().reset_index().sort_values(by=count, ascending=False).head(limit)
 
     fig = px.bar(
         df1, 
@@ -159,8 +147,6 @@ def create_hbar_chart(df: pd.DataFrame, title: str, groupby: str, count: str, li
         gridcolor='#444444'
     )
     return fig
-
-create_hbar_chart(data, 'Total Profit by Source', 'Organization Name', 'money_value', 10)  # temp call for testing purposes
 
 
 #----------------------------------------#
@@ -228,7 +214,6 @@ def create_vbar_chart(df: pd.DataFrame, title: str, groupby: str, count: str, li
         gridcolor='#444444'
     )
     return fig
-create_vbar_chart(data, 'Total Profit by Organization top ten', 'Organization Name', 'ItemQuantity', 10)  # temp call for testing purposes
 
 
 #----------------------------------------#
@@ -299,58 +284,3 @@ def create_pie_chart(df: pd.DataFrame, title: str, names: str, values: str, limi
         ),
     )
     return fig
-
-create_pie_chart(data, 'Profit Distribution by Organization top ten', 'Organization Name', 'money_value', 10)  # temp call for testing purposes
-
-
-#----------------------------------------#
-# FOLIUM MAP FIGURE
-#----------------------------------------#
-
-# this doe snot work at the moment as it needs lat and log 
-
-# look into doing this is addresses 
-
-def create_map(df: pd.DataFrame, lat_col: str, lon_col: str, popup_col: str) -> folium.Map:
-    '''
-    explanation:
-    This function creates a folium map with markers.
-    
-    input:
-    dataframe taken from a sql query that will have the ability to be filtered by various factors.
-    
-    output:
-    folium map object
-    
-    MANDATORY COLUMNS IN QUERY:
-    
-    COME BACK TO
-    
-    additions to make:
-    clustering of markers
-    different marker styles
-    '''
-    
-    logger.info('Creating folium map with markers')
-
-    # Initialize the map centered around the mean latitude and longitude
-    m = folium.Map(location=[df[lat_col].mean(), df[lon_col].mean()], zoom_start=2)
-
-    # Add markers to the map
-    for _, row in df.iterrows():
-        folium.Marker(
-            location=[row[lat_col], row[lon_col]],
-            popup=str(row[popup_col])
-        ).add_to(m)
-    
-    return m
-
-# create_map(data, 'Latitude', 'Longitude', 'Organization Name')  # temp call for testing purposes
-
-
-data.head()
-
-
-
-
-

@@ -1,32 +1,22 @@
-from gtc_pivot_tables.Utils import logger
-import logging
-import os
-from datetime import datetime
-import pandas as pd
-import xlsxwriter
-from logging_utils.env import load_root_env
-load_root_env()
+"""Write the three pivot tables to one Excel workbook."""
+from __future__ import annotations
 
-from gtc_pivot_tables.config import path_config
+import logging
+from datetime import datetime
+from pathlib import Path
+
+import pandas as pd
 
 logger = logging.getLogger(__name__)
-logger.info("Export_to_Excel module loaded.")
 
 
-#------------------------------#
-# Export pivot tables to single excel workbook
-#------------------------------#
-
-
-def excel_export(ptable1, ptable2, ptable3, output_folder) -> None:
-    #timestamp for file name
-    now = datetime.now()
-    timestamp = now.strftime('%m-%d-%Y')
-    #output path
-    output_file_path = os.path.join(output_folder, f'Formated Table {timestamp}.xlsx')
-    #exporting to excel
-    with pd.ExcelWriter(output_file_path, engine='xlsxwriter') as writer:
-        ptable1.to_excel(writer, sheet_name='Garment Counts')
-        ptable2.to_excel(writer, sheet_name='By Item Name')
-        ptable3.to_excel(writer, sheet_name='By Customer Name')
-        logger.info(f'Excel file exported to {output_file_path}')
+def excel_export(garments: pd.DataFrame, items: pd.DataFrame, customers: pd.DataFrame,
+                 output_dir: Path) -> Path:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    path = output_dir / f"Formated Table {datetime.now():%m-%d-%Y}.xlsx"
+    with pd.ExcelWriter(path, engine="xlsxwriter") as writer:
+        garments.to_excel(writer, sheet_name="Garment Counts")
+        items.to_excel(writer, sheet_name="By Item Name")
+        customers.to_excel(writer, sheet_name="By Customer Name")
+    logger.info("Workbook written to %s", path)
+    return path
