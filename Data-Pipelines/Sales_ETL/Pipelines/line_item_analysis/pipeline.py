@@ -1,59 +1,27 @@
-from pathlib import Path
+"""Line-item analysis pipeline: square_raw + shopify_raw -> lineitem_analysis.
+
+Runs ``sql/lineitem_analysis_query.sql`` (one row per line item from both
+stores), tags each item with size / color / organization / garment, and
+rebuilds the ``lineitem_analysis`` table.
+"""
+from __future__ import annotations
+
 import logging
-from Sales_ETL.Pipelines.line_item_analysis.utils import logger
-from Sales_ETL.common.config import db_config
-from Sales_ETL.Pipelines.line_item_analysis.config import path_config, pipeline_config
-from Sales_ETL.Pipelines.line_item_analysis.extract import query_data_from_file
-from Sales_ETL.Pipelines.line_item_analysis.load import create_mysql_table_if_replace, create_sqlite_table_if_replace
-from Sales_ETL.Pipelines.line_item_analysis.lineitem_analysis_transform import transform_lineitem_analysis
-from Sales_ETL.sql.functions.connections import create_mysql_engine, sqlite_connection, sqlite_close_connection, mysql_close_connection
+from pathlib import Path
+
+from gtc_common.db import read_sql_file, replace_table
+
+from .transform import transform_lineitem_analysis
 
 logger = logging.getLogger(__name__)
-logger.info("[Starting] ETL pipeline")
 
-    
-def process_query(function, query_file: Path, table_name: str, engine, conn) -> None:
-    df = query_data_from_file(engine, query_file)
-    logger.info(f'Extracted Data for {table_name} from query file {query_file.name}')
-    transformed_df = function(df)
-    logger.info(f'Transformed Data for {table_name} using {function.__name__}')
-    create_sqlite_table_if_replace(transformed_df, table_name=table_name, conn=conn)
-    create_mysql_table_if_replace(transformed_df, table_name=table_name, engine=engine)
+TABLE = "lineitem_analysis"
+QUERY_FILE = Path(__file__).resolve().parents[2] / "sql" / "lineitem_analysis_query.sql"
 
 
-#----------------------------------------#
-# MAIN PIPELINE FUNCTION
-#----------------------------------------#
-
-def run_pipeline() -> None:
-    
-    # Load configurations
-    query_paths_cfg = path_config()
-    Mysql_cfg, Sqlite_cfg = db_config()
-    lineitem_pipeline_cfg = pipeline_config()
-
-    # Load database engine
-
-    engine = create_mysql_engine(Mysql_cfg)
-    
-    # SQLite connection
-
-    conn = sqlite_connection(Sqlite_cfg.database_path)
-    
-    # add steps needed for a table to be made for lineitem analysis
-
-    logger.info(f"[Starting] ETL for Lineitem Analysis into '{lineitem_pipeline_cfg.table_name}'")
-
-    process_query(function=transform_lineitem_analysis, query_file=query_paths_cfg.lineitem_analysis, table_name=lineitem_pipeline_cfg.table_name, engine=engine, conn=conn)
-    
-    logger.info("[Completed] Lineitem Analysis ETL pipeline")
-
-    # Close database connection
-    mysql_close_connection(engine)
-    sqlite_close_connection(conn)
-
-if __name__ == "__main__":
-    run_pipeline()
-
-
-
+def run_pipeline() -> int:
+    logger.info("[Starting] line item analysis pipeline")
+    df = transform_lineitem_analysis(read_sql_file(QUERY_FILE))
+    rows = replace_table(df, TABLE)
+    logger.info("[Completed] line item analysis pipeline: %s rows", rows)
+    return rows

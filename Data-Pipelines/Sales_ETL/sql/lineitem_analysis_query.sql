@@ -1,19 +1,23 @@
-select `Order Date` as OrderDate,
-       `Item Quantity` as ItemQuantity,
-       CONCAT_WS(' - ', `Item Name`, `Item Variation`) as ItemName,
-       `Item Price` as ItemPrice,
-       CONCAT_WS(', ', `Recipient Address`, `Recipient City`, `Recipient Region`, `Recipient Postal Code`, `Recipient Country`) as ShippingLocation,
-       'Square' as Source
+-- One row per line item from both stores, used by the line_item_analysis pipeline.
+-- Shopify timestamps are stored in UTC; dates are taken in the store's local time.
+select order_date::date                                       as order_date,
+       item_quantity,
+       concat_ws(' - ', item_name, item_variation)            as item_name,
+       item_price,
+       nullif(concat_ws(', ', recipient_address, recipient_city, recipient_region,
+                        recipient_postal_code, recipient_country), '') as shipping_location,
+       'Square'                                               as source
 from square_raw
 
-UNION ALL
+union all
 
-select `Paid at` as OrderDate,
-       `Lineitem quantity` as ItemQuantity,
-       `Lineitem name` as ItemName,
-       `Lineitem price` as ItemPrice,
-       CONCAT_WS(', ', `Shipping Street`, `Shipping City`, `Shipping Province`, `Shipping Zip`, `Shipping Country`) as ShippingLocation,
-       'Shopify' as Source
+select (coalesce(paid_at, created_at) at time zone 'America/Los_Angeles')::date as order_date,
+       lineitem_quantity                                      as item_quantity,
+       lineitem_name                                          as item_name,
+       lineitem_price                                         as item_price,
+       nullif(concat_ws(', ', shipping_street, shipping_city, shipping_province,
+                        shipping_zip, shipping_country), '')  as shipping_location,
+       'Shopify'                                              as source
 from shopify_raw
 
-ORDER BY OrderDate ASC;
+order by order_date asc nulls last, source, item_name;
